@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AutoCare - Fleet & Maintenance Suite</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Chart.js for Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: 'var(--color-brand-50, #eff6ff)',
+              100: 'var(--color-brand-100, #dbeafe)',
+              500: 'var(--color-brand-500, #3b82f6)',
+              600: 'var(--color-brand-600, #2563eb)',
+              700: 'var(--color-brand-700, #1d4ed8)',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- CSS Variables for Dynamic Color Themes & Spin Removal -->
+  <style>
+    :root {
+      --color-brand-50: #eff6ff;
+      --color-brand-100: #dbeafe;
+      --color-brand-500: #3b82f6;
+      --color-brand-600: #2563eb;
+      --color-brand-700: #1d4ed8;
+    }
+
+    /* Color Theme Variants */
+    .theme-emerald {
+      --color-brand-50: #ecfdf5;
+      --color-brand-100: #d1fae5;
+      --color-brand-500: #10b981;
+      --color-brand-600: #059669;
+      --color-brand-700: #047857;
+    }
+    .theme-violet {
+      --color-brand-50: #f5f3ff;
+      --color-brand-100: #ede9fe;
+      --color-brand-500: #8b5cf6;
+      --color-brand-600: #7c3aed;
+      --color-brand-700: #6d28d9;
+    }
+    .theme-amber {
+      --color-brand-50: #fffbeb;
+      --color-brand-100: #fef3c7;
+      --color-brand-500: #f59e0b;
+      --color-brand-600: #d97706;
+      --color-brand-700: #b45309;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col items-center justify-start p-4 sm:p-6 pb-24 transition-colors duration-200">
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <header id="mainHeader" class="w-full max-w-2xl py-2 mb-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold">
+        <i id="headerIcon" class="fa-solid fa-gauge-high text-base"></i>
+      </div>
+      <div>
+        <h1 id="headerTitle" class="text-lg font-bold text-slate-900 dark:text-white leading-tight">AutoCare</h1>
+        <p id="headerSubtitle" class="text-xs text-slate-500 dark:text-slate-400">Fleet Overview & Dashboard</p>
+      </div>
+    </div>
+
+    <!-- Header Actions & Profile Avatar Trigger -->
+    <div class="flex items-center gap-2">
+      <div id="headerActions"></div>
+      <button type="button" onclick="switchView('profile')" class="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden border border-slate-300 dark:border-slate-600 hover:ring-2 hover:ring-brand-500 transition-all active:scale-95 flex items-center justify-center text-lg">
+        <span id="headerAvatarDisplay">🐰</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CANVAS CONTAINER ==================== -->
+  <main class="w-full max-w-2xl space-y-4">
+
+    <!-- VIEW 0: LOGIN / AUTHENTICATION -->
+    <section id="view-login" class="app-view hidden my-auto flex flex-col items-center justify-center pt-8">
+      <div class="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 space-y-6">
+        <div class="text-center space-y-2">
+          <div class="w-14 h-14 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto text-2xl font-bold shadow-sm">
+            <i class="fa-solid fa-car-side"></i>
+          </div>
+          <h2 class="text-xl font-extrabold text-slate-900 dark:text-white">Welcome Back</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Sign in to manage your fleet & maintenance</p>
+        </div>
+
+        <form onsubmit="handleLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Email Address</label>
+            <div class="relative">
+              <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input type="email" id="loginEmail" required value="alex.morgan@example.com" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl pl-9 pr-3.5 py-3 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Password</label>
+              <a href="#" onclick="alert('Password reset link sent to email.')" class="text-[11px] font-semibold text-brand-600 hover:underline">Forgot?</a>
+            </div>
+            <div class="relative">
+              <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input type="password" id="loginPassword" required value="••••••••" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl pl-9 pr-3.5 py-3 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-xs">
+            <label class="flex items-center gap-2 cursor-pointer text-slate-600 dark:text-slate-400">
+              <input type="checkbox" checked class="rounded text-brand-600 focus:ring-brand-500">
+              <span>Remember me</span>
+            </label>
+          </div>
+
+          <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm py-3 rounded-xl shadow-md transition-all active:scale-[0.99] flex items-center justify-center gap-2">
+            <span>Sign In</span>
+            <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- VIEW 1: HOME DASHBOARD -->
+    <section id="view-dashboard" class="app-view space-y-4">
+      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-500 to-brand-700"></div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Monthly Fuel Spend</p>
+            <p class="text-2xl font-extrabold text-brand-600">₹ 6,100</p>
+            <div class="flex items-center gap-1 text-emerald-600 text-[11px] font-semibold">
+              <i class="fa-solid fa-arrow-trend-down text-xs"></i>
+              <span>-12% vs last month</span>
+            </div>
+          </div>
+
+          <div class="space-y-1 border-l border-slate-100 dark:border-slate-700 pl-4">
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Distance Driven</p>
+            <p class="text-2xl font-extrabold text-slate-900 dark:text-white">775 <span class="text-xs font-normal text-slate-500">km</span></p>
+            <div class="flex items-center gap-1 text-slate-500 text-[11px] font-medium">
+              <i class="fa-solid fa-route text-xs text-slate-400"></i>
+              <span>Avg 25 km/day</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">Quick Actions</h2>
+        <div class="grid grid-cols-3 gap-3">
+          <button type="button" onclick="openServiceModal()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3.5 flex flex-col items-center justify-center gap-2 shadow-sm hover:border-brand-500 hover:shadow-md transition-all active:scale-95 text-center">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-slate-700 text-brand-600 flex items-center justify-center border border-blue-100 dark:border-slate-600">
+              <i class="fa-solid fa-screwdriver-wrench text-base"></i>
+            </div>
+            <span class="text-xs font-semibold text-slate-700 dark:text-slate-200">Log Service</span>
+          </button>
+
+          <button type="button" onclick="openVehicleModal()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3.5 flex flex-col items-center justify-center gap-2 shadow-sm hover:border-brand-500 hover:shadow-md transition-all active:scale-95 text-center">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-slate-700 text-brand-600 flex items-center justify-center border border-blue-100 dark:border-slate-600">
+              <i class="fa-solid fa-car text-base"></i>
+            </div>
+            <span class="text-xs font-semibold text-slate-700 dark:text-slate-200">Add Vehicle</span>
+          </button>
+
+          <button type="button" onclick="openFuelModal()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3.5 flex flex-col items-center justify-center gap-2 shadow-sm hover:border-brand-500 hover:shadow-md transition-all active:scale-95 text-center">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-slate-700 text-brand-600 flex items-center justify-center border border-blue-100 dark:border-slate-600">
+              <i class="fa-solid fa-gas-pump text-base"></i>
+            </div>
+            <span class="text-xs font-semibold text-slate-700 dark:text-slate-200">Log Fuel</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-2.5">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Upcoming Priorities</h2>
+          <button type="button" onclick="switchView('vehicles')" class="text-xs font-semibold text-brand-600 hover:underline">View All</button>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden divide-y divide-slate-100 dark:divide-slate-700">
+          <div class="flex items-center justify-between p-3.5 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 border border-amber-100 dark:border-amber-900 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-wrench text-sm"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-900 dark:text-white">Engine Oil & Filter Change</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Toyota Camry (KL-16-R-0647) • Due in 500 km</p>
+              </div>
+            </div>
+            <button type="button" onclick="openServiceModal('KL-16-R-0647')" class="text-[11px] font-semibold text-brand-600 bg-blue-50 dark:bg-slate-700 border border-blue-100 dark:border-slate-600 px-3 py-1.5 rounded-xl hover:bg-blue-100 transition-colors">
+              Log
+            </button>
+          </div>
+
+          <div class="flex items-center justify-between p-3.5 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-red-50 dark:bg-red-950/40 text-red-600 border border-red-100 dark:border-red-900 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-leaf text-sm"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-900 dark:text-white">PUC Certificate Renewal</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Royal Enfield (KL-01-AB-1253) • Due 05 Aug 2026</p>
+              </div>
+            </div>
+            <button type="button" onclick="editVehicle('VEH-1002')" class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 px-3 py-1.5 rounded-xl hover:bg-slate-200 transition-colors">
+              Update
+            </button>
+          </div>
+
+          <div class="flex items-center justify-between p-3.5 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-slate-700 text-brand-600 border border-blue-100 dark:border-slate-600 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-shield-halved text-sm"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-900 dark:text-white">Insurance Renewal</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Toyota Camry (KL-16-R-0647) • Due 31 Oct 2026</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900 px-2.5 py-1 rounded-lg">
+              Valid
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: VEHICLE MANAGEMENT -->
+    <section id="view-vehicles" class="app-view hidden space-y-4">
+      <div id="vehicleList" class="space-y-4">
+        <!-- Vehicle 1 -->
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm p-5 space-y-4 relative" data-vehicle-id="VEH-1001">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3.5">
+              <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-slate-700 text-brand-600 flex items-center justify-center border border-blue-100 dark:border-slate-600 shrink-0">
+                <i class="fa-solid fa-car text-xl"></i>
+              </div>
+              <div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white tracking-wide">KL-16-R-0647</h3>
+                <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Toyota • Camry (2022)</p>
+              </div>
+            </div>
+
+            <div class="relative">
+              <button type="button" onclick="toggleMenu(this)" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors flex items-center justify-center">
+                <i class="fa-solid fa-ellipsis-vertical text-base"></i>
+              </button>
+              <div class="menu-dropdown hidden absolute right-0 top-9 w-36 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg z-10 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300">
+                <button type="button" onclick="moveVehicle(this, 'up')" class="w-full text-left px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2.5"><i class="fa-solid fa-arrow-up text-slate-400"></i> Move Up</button>
+                <button type="button" onclick="moveVehicle(this, 'down')" class="w-full text-left px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2.5"><i class="fa-solid fa-arrow-down text-slate-400"></i> Move Down</button>
+                <div class="border-t border-slate-100 dark:border-slate-700 my-1"></div>
+                <button type="button" onclick="deleteVehicle(this)" class="w-full text-left px-3.5 py-2 hover:bg-red-50 text-red-600 flex items-center gap-2.5"><i class="fa-solid fa-trash-can"></i> Delete</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 py-3.5 border-y border-slate-100 dark:border-slate-700 text-center">
+            <div class="space-y-1">
+              <div class="flex items-center justify-center gap-1.5 text-slate-400"><i class="fa-solid fa-wrench text-xs"></i><span class="text-[10px] font-semibold uppercase tracking-wider">Upcoming Service</span></div>
+              <p class="text-xs font-bold text-slate-800 dark:text-slate-200">15 Oct 2026</p>
+              <span class="inline-block px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 rounded-full">Active</span>
+            </div>
+            <div class="space-y-1 border-x border-slate-100 dark:border-slate-700">
+              <div class="flex items-center justify-center gap-1.5 text-slate-400"><i class="fa-solid fa-shield-halved text-xs"></i><span class="text-[10px] font-semibold uppercase tracking-wider">Insurance Valid</span></div>
+              <p class="text-xs font-bold text-slate-800 dark:text-slate-200">31 Oct 2026</p>
+              <span class="inline-block px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 rounded-full">Valid</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-center gap-1.5 text-slate-400"><i class="fa-solid fa-leaf text-xs"></i><span class="text-[10px] font-semibold uppercase tracking-wider">PUC Valid</span></div>
+              <p class="text-xs font-bold text-slate-800 dark:text-slate-200">20 Dec 2026</p>
+              <span class="inline-block px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 rounded-full">Valid</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-750 px-3.5 py-2 rounded-xl">
+            <div class="flex items-center gap-2"><i class="fa-solid fa-gauge text-slate-400"></i><span class="font-medium">Odometer Reading:</span></div>
+            <span class="font-bold text-slate-900 dark:text-white">45,820 km</span>
+          </div>
+
+          <button type="button" onclick="editVehicle('VEH-1001')" class="w-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 font-semibold text-xs py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 active:scale-[0.99]">
+            <i class="fa-solid fa-pen-to-square"></i> Edit Vehicle Details
+          </button>
+        </div>
+
+        <!-- Vehicle 2 -->
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm p-5 space-y-4 relative" data-vehicle-id="VEH-1002">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3.5">
+              <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 border border-amber-100 dark:border-amber-900 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-motorcycle text-xl"></i>
+              </div>
+              <div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white tracking-wide">KL-01-AB-1253</h3>
+                <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Royal Enfield • Hunter 350 (2023)</p>
+              </div>
+            </div>
+
+            <div class="relative">
+              <button type="button" onclick="toggleMenu(this)" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors flex items-center justify-center">
+                <i class="fa-solid fa-ellipsis-vertical text-base"></i>
+              </button>
+              <div class="menu-dropdown hidden absolute right-0 top-9 w-36 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg z-10 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300">
+                <button type="button" onclick="moveVehicle(this, 'up')" class="w-full text-left px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2.5"><i class="fa-solid fa-arrow-up text-slate-400"></i> Move Up</button>
+                <button type="button" onclick="moveVehicle(this, 'down')" class="w-full text-left px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2.5"><i class="fa-solid fa-arrow-down text-slate-400"></i> Move Down</button>
+                <div class="border-t border-slate-100 dark:border-slate-700 my-1"></div>
+                <button type="button" onclick="deleteVehicle(this)" class="w-full text-left px-3.5 py-2 hover:bg-red-50 text-red-600 flex items-center gap-2.5"><i class="fa-solid fa-trash-can"></i> Delete</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 py-3.5 border-y border-slate-100 dark:border-slate-700 text-center">
+            <div class="space-y-1">
+              <div class="flex items-center justify-center gap-1.5 text-slate-400"><i class="fa-solid fa-wrench text-xs"></i><span class="text-[10px] font-semibold uppercase tracking-wider">Upcoming Service</span></div>
+              <p class="text-xs font-bold text-slate-800 dark:text-slate-200">10 Sep 2026</p>
+              <span class="inline-block px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 rounded-full">Active</span>
+            </div>
+            <div class="space-y-1 border-x border-slate-100 dark:border-slate-700">
+              <div class="flex items-center justify-center gap-1.5 text-slate-400"><i class="fa-solid fa-shield-halved text-xs"></i><span class="text-[10px] font-semibold uppercase tracking-wider">Insurance Valid</span></div>
+              <p class="text-xs font-bold text-slate-800 dark:text-slate-200">18 Nov 2026</p>
+              <span class="inline-block px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 rounded-full">Valid</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-center gap-1.5 text-slate-400"><i class="fa-solid fa-leaf text-xs"></i><span class="text-[10px] font-semibold uppercase tracking-wider">PUC Valid</span></div>
+              <p class="text-xs font-bold text-slate-800 dark:text-slate-200">05 Aug 2026</p>
+              <span class="inline-block px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 rounded-full">Due Soon</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-750 px-3.5 py-2 rounded-xl">
+            <div class="flex items-center gap-2"><i class="fa-solid fa-gauge text-slate-400"></i><span class="font-medium">Odometer Reading:</span></div>
+            <span class="font-bold text-slate-900 dark:text-white">12,410 km</span>
+          </div>
+
+          <button type="button" onclick="editVehicle('VEH-1002')" class="w-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 font-semibold text-xs py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 active:scale-[0.99]">
+            <i class="fa-solid fa-pen-to-square"></i> Edit Vehicle Details
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: SERVICE LOGS -->
+    <section id="view-services" class="app-view hidden space-y-4">
+      <div class="bg-gradient-to-br from-brand-600 to-brand-700 text-white border border-brand-500 rounded-2xl p-5 shadow-sm space-y-3 relative overflow-hidden">
+        <div class="flex justify-between items-start">
+          <div>
+            <span class="text-[10px] font-semibold tracking-wider uppercase bg-white/20 px-2.5 py-1 rounded-full">Next Priority Service</span>
+            <h2 class="text-lg font-extrabold mt-2">Engine Oil & Filter Replacement</h2>
+            <p class="text-xs text-blue-100">Toyota Camry (KL-16-R-0647)</p>
+          </div>
+          <div class="text-right">
+            <span class="text-xs font-bold bg-white text-brand-700 px-2.5 py-1 rounded-lg">Due in 500 km</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 pt-2 border-t border-white/20 text-center text-xs">
+          <div><p class="text-[10px] text-blue-200 uppercase font-medium">Estimated Date</p><p class="font-bold mt-0.5">30 Oct 2026</p></div>
+          <div class="border-x border-white/20"><p class="text-[10px] text-blue-200 uppercase font-medium">Target Odometer</p><p class="font-bold mt-0.5">46,320 km</p></div>
+          <div><p class="text-[10px] text-blue-200 uppercase font-medium">Expected Cost</p><p class="font-bold mt-0.5">₹ 2,500</p></div>
+        </div>
+      </div>
+
+      <div id="serviceTimeline" class="space-y-3">
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm p-4 space-y-3 relative" data-service-id="SRV-1001">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-slate-700 text-brand-600 flex items-center justify-center border border-blue-100 dark:border-slate-600 shrink-0"><i class="fa-solid fa-wrench text-base"></i></div>
+              <div>
+                <div class="flex items-center gap-2"><h4 class="text-sm font-bold text-slate-900 dark:text-white">Periodic Maintenance</h4><span class="text-[10px] font-semibold text-slate-500 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-md">KL-16-R-0647</span></div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">15 Aug 2026 • 45,000 km</p>
+              </div>
+            </div>
+
+            <div class="relative">
+              <button type="button" onclick="toggleMenu(this)" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors flex items-center justify-center"><i class="fa-solid fa-ellipsis-vertical text-base"></i></button>
+              <div class="menu-dropdown hidden absolute right-0 top-9 w-32 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg z-10 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300">
+                <button type="button" onclick="editService('SRV-1001')" class="w-full text-left px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"><i class="fa-solid fa-pen-to-square text-slate-400"></i> Edit</button>
+                <div class="border-t border-slate-100 dark:border-slate-700 my-1"></div>
+                <button type="button" onclick="deleteService(this)" class="w-full text-left px-3.5 py-2 hover:bg-red-50 text-red-600 flex items-center gap-2"><i class="fa-solid fa-trash-can"></i> Delete</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-750 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+            <div><span class="text-[10px] text-slate-400 font-medium uppercase block">Workshop Name</span><span class="font-semibold text-slate-800 dark:text-slate-200">Toyota Authorized Service</span></div>
+            <div><span class="text-[10px] text-slate-400 font-medium uppercase block">Carried Out By</span><span class="font-semibold text-slate-800 dark:text-slate-200">Suresh (Mechanic)</span></div>
+            <div><span class="text-[10px] text-slate-400 font-medium uppercase block">Total Bill</span><span class="font-bold text-slate-900 dark:text-white">₹ 4,250</span></div>
+            <div><span class="text-[10px] text-slate-400 font-medium uppercase block">Odometer</span><span class="font-semibold text-slate-800 dark:text-slate-200">45,000 km</span></div>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5 pt-1">
+            <span class="text-[10px] font-semibold bg-blue-50 dark:bg-slate-700 text-brand-700 dark:text-brand-100 px-2.5 py-1 rounded-lg border border-blue-100 dark:border-slate-600">Engine Oil Replacement</span>
+            <span class="text-[10px] font-semibold bg-blue-50 dark:bg-slate-700 text-brand-700 dark:text-brand-100 px-2.5 py-1 rounded-lg border border-blue-100 dark:border-slate-600">Oil Filter Replacement</span>
+            <span class="text-[10px] font-semibold bg-blue-50 dark:bg-slate-700 text-brand-700 dark:text-brand-100 px-2.5 py-1 rounded-lg border border-blue-100 dark:border-slate-600">Wheel Alignment</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: FUEL & MILEAGE LOGS -->
+    <section id="view-fuel" class="app-view hidden space-y-4">
+      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 shadow-sm space-y-3">
+        <div class="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+          <i class="fa-solid fa-indian-rupee-sign text-brand-600 text-sm"></i>
+          <span class="text-xs font-bold">Today's Fuel Rates</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">Normal E20</span>
+            <div class="flex items-center gap-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg px-2 py-1 focus-within:ring-1 focus-within:ring-brand-500">
+              <span class="text-xs font-bold text-slate-400">₹</span>
+              <input type="number" step="0.01" id="rateE20" placeholder="102.50" onchange="autoSaveRates()" onblur="autoSaveRates()" class="w-16 text-xs font-bold text-slate-900 dark:text-white focus:outline-none bg-transparent text-right">
+            </div>
+          </div>
+
+          <div class="bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">Xtra Premium</span>
+            <div class="flex items-center gap-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg px-2 py-1 focus-within:ring-1 focus-within:ring-brand-500">
+              <span class="text-xs font-bold text-slate-400">₹</span>
+              <input type="number" step="0.01" id="ratePremium" placeholder="108.00" onchange="autoSaveRates()" onblur="autoSaveRates()" class="w-16 text-xs font-bold text-slate-900 dark:text-white focus:outline-none bg-transparent text-right">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Vehicle 1 Fuel Summary -->
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm p-5 space-y-4 relative" data-vehicle-id="KL-16-R-0647">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3.5">
+              <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-slate-700 text-brand-600 flex items-center justify-center border border-blue-100 dark:border-slate-600 shrink-0"><i class="fa-solid fa-car text-xl"></i></div>
+              <div><h3 class="text-base font-bold text-slate-900 dark:text-white tracking-wide">KL-16-R-0647</h3><p class="text-xs font-medium text-slate-500 dark:text-slate-400">Toyota • Camry (2022)</p></div>
+            </div>
+            <button type="button" onclick="openFuelModal('KL-16-R-0647')" class="text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 active:scale-95 shadow-sm">
+              <i class="fa-solid fa-plus text-xs"></i> Quick Log
+            </button>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 py-3.5 border-y border-slate-100 dark:border-slate-700 text-center">
+            <div><span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block mb-0.5">Last Mileage</span><span class="text-sm font-extrabold text-brand-600">14.2 <span class="text-[10px] font-normal text-slate-500">km/L</span></span></div>
+            <div class="border-x border-slate-100 dark:border-slate-700"><span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block mb-0.5">Avg Mileage</span><span class="text-sm font-extrabold text-slate-800 dark:text-slate-200">13.8 <span class="text-[10px] font-normal text-slate-500">km/L</span></span></div>
+            <div><span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block mb-0.5">Monthly Spend</span><span class="text-sm font-extrabold text-slate-800 dark:text-slate-200">₹ 4,850</span></div>
+          </div>
+
+          <div class="space-y-2">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Recent Fill-ups</span>
+            <div class="bg-slate-50 dark:bg-slate-750 border border-slate-100 dark:border-slate-700 rounded-xl p-3 space-y-2 text-xs">
+              <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-slate-700">
+                <div><p class="font-bold text-slate-800 dark:text-slate-200">18 Aug 2026 • Normal E20</p><p class="text-slate-500 dark:text-slate-400 text-[11px]">IndianOil • 35.5 Liters @ ₹102.50/L</p></div>
+                <div class="text-right"><p class="font-bold text-slate-900 dark:text-white">₹ 3,638.75</p><p class="text-[10px] text-emerald-600 font-semibold">45,820 km (+450 km)</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vehicle 2 Fuel Summary -->
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm p-5 space-y-4 relative" data-vehicle-id="KL-01-AB-1253">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3.5">
+              <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 border border-amber-100 dark:border-amber-900 flex items-center justify-center shrink-0"><i class="fa-solid fa-motorcycle text-xl"></i></div>
+              <div><h3 class="text-base font-bold text-slate-900 dark:text-white tracking-wide">KL-01-AB-1253</h3><p class="text-xs font-medium text-slate-500 dark:text-slate-400">Royal Enfield • Hunter 350 (2023)</p></div>
+            </div>
+            <button type="button" onclick="openFuelModal('KL-01-AB-1253')" class="text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 active:scale-95 shadow-sm">
+              <i class="fa-solid fa-plus text-xs"></i> Quick Log
+            </button>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 py-3.5 border-y border-slate-100 dark:border-slate-700 text-center">
+            <div><span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block mb-0.5">Last Mileage</span><span class="text-sm font-extrabold text-brand-600">32.5 <span class="text-[10px] font-normal text-slate-500">km/L</span></span></div>
+            <div class="border-x border-slate-100 dark:border-slate-700"><span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block mb-0.5">Avg Mileage</span><span class="text-sm font-extrabold text-slate-800 dark:text-slate-200">31.8 <span class="text-[10px] font-normal text-slate-500">km/L</span></span></div>
+            <div><span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block mb-0.5">Monthly Spend</span><span class="text-sm font-extrabold text-slate-800 dark:text-slate-200">₹ 1,250</span></div>
+          </div>
+
+          <div class="space-y-2">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Recent Fill-ups</span>
+            <div class="bg-slate-50 dark:bg-slate-750 border border-slate-100 dark:border-slate-700 rounded-xl p-3 space-y-2 text-xs">
+              <div class="flex justify-between items-center">
+                <div><p class="font-bold text-slate-800 dark:text-slate-200">12 Aug 2026 • Xtra Premium</p><p class="text-slate-500 dark:text-slate-400 text-[11px]">Bharat Petroleum • 10.0 Liters @ ₹108.00/L</p></div>
+                <div class="text-right"><p class="font-bold text-slate-900 dark:text-white">₹ 1,080.00</p><p class="text-[10px] text-emerald-600 font-semibold">12,410 km (+325 km)</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 5: FLEET ANALYTICS -->
+    <section id="view-analytics" class="app-view hidden space-y-4">
+      <div class="grid grid-cols-3 gap-3">
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3.5 shadow-sm text-center">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Expense</span>
+          <span class="text-base font-extrabold text-slate-900 dark:text-white">₹ 9,738</span>
+          <span class="text-[10px] text-emerald-600 font-semibold block mt-0.5">Debit Only</span>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3.5 shadow-sm text-center">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Avg Efficiency</span>
+          <span class="text-base font-extrabold text-brand-600">22.8 <span class="text-[10px] font-normal text-slate-500">km/L</span></span>
+          <span class="text-[10px] text-emerald-600 font-semibold block mt-0.5">+3.5% vs last mo</span>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3.5 shadow-sm text-center">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Distance</span>
+          <span class="text-base font-extrabold text-slate-900 dark:text-white">775 <span class="text-[10px] font-normal text-slate-500">km</span></span>
+          <span class="text-[10px] text-slate-400 font-semibold block mt-0.5">Aug 2026</span>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-sm font-bold text-slate-900 dark:text-white">Fuel Efficiency Trends</h2>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Average kilometers per liter (km/L)</p>
+          </div>
+          <div class="flex bg-slate-100 dark:bg-slate-700 p-1 rounded-xl text-[11px] font-semibold text-slate-600 dark:text-slate-300 gap-1">
+            <button type="button" onclick="setEfficiencyChartType('line')" id="btnLine" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-brand-600 shadow-sm transition-all">Line</button>
+            <button type="button" onclick="setEfficiencyChartType('bar')" id="btnBar" class="px-2.5 py-1 rounded-lg hover:text-slate-900 dark:hover:text-white transition-all">Bar</button>
+          </div>
+        </div>
+
+        <div class="h-52 w-full pt-2">
+          <canvas id="efficiencyChart"></canvas>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-2">
+            <h2 class="text-sm font-bold text-slate-900 dark:text-white">Expense Breakdown</h2>
+            <span class="text-xs font-bold text-slate-400">Total Debit</span>
+          </div>
+
+          <div class="h-44 w-full flex items-center justify-center">
+            <canvas id="expenseChart"></canvas>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-slate-100 dark:border-slate-700">
+            <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-750 p-2 rounded-xl border border-slate-100 dark:border-slate-700">
+              <span class="text-slate-600 dark:text-slate-300 font-medium">Fuel</span>
+              <span class="font-bold text-slate-900 dark:text-white">₹ 5,488 (56%)</span>
+            </div>
+            <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-750 p-2 rounded-xl border border-slate-100 dark:border-slate-700">
+              <span class="text-slate-600 dark:text-slate-300 font-medium">Services</span>
+              <span class="font-bold text-slate-900 dark:text-white">₹ 4,250 (44%)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-2">
+            <h2 class="text-sm font-bold text-slate-900 dark:text-white">Vehicle Performance</h2>
+            <span class="text-[10px] font-semibold text-brand-600 uppercase bg-blue-50 dark:bg-slate-700 px-2 py-0.5 rounded-md">Ranked</span>
+          </div>
+
+          <div class="space-y-3">
+            <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-750 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 border border-amber-100 dark:border-amber-900 flex items-center justify-center shrink-0"><i class="fa-solid fa-motorcycle text-sm"></i></div>
+                <div><p class="text-xs font-bold text-slate-900 dark:text-white">KL-01-AB-1253</p><p class="text-[10px] text-slate-500 dark:text-slate-400">Hunter 350 • Royal Enfield</p></div>
+              </div>
+              <div class="text-right"><p class="text-xs font-extrabold text-brand-600">32.5 km/L</p><p class="text-[10px] font-medium text-slate-400">₹ 1,250 spent</p></div>
+            </div>
+
+            <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-750 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-slate-700 text-brand-600 border border-blue-100 dark:border-slate-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-car text-sm"></i></div>
+                <div><p class="text-xs font-bold text-slate-900 dark:text-white">KL-16-R-0647</p><p class="text-[10px] text-slate-500 dark:text-slate-400">Camry • Toyota</p></div>
+              </div>
+              <div class="text-right"><p class="text-xs font-extrabold text-slate-800 dark:text-slate-200">14.2 km/L</p><p class="text-[10px] font-medium text-slate-400">₹ 8,488 spent</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 6: PROFILE & SETTINGS -->
+    <section id="view-profile" class="app-view hidden space-y-4">
+      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm flex flex-col items-center text-center space-y-3">
+        <div class="relative">
+          <div id="selectedAvatar" class="w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-700 border-2 border-brand-500 flex items-center justify-center text-4xl shadow-inner">
+            🐰
+          </div>
+          <button type="button" onclick="openAvatarSelector()" class="absolute bottom-0 right-0 w-7 h-7 bg-brand-600 text-white rounded-full text-xs shadow-md hover:bg-brand-700 transition-colors flex items-center justify-center">
+            <i class="fa-solid fa-pencil"></i>
+          </button>
+        </div>
+        <div>
+          <h3 id="profileDisplayName" class="text-base font-bold text-slate-900 dark:text-white">Alex Morgan</h3>
+          <p id="profileDisplayUsername" class="text-xs text-brand-600 font-semibold">@alex_precision</p>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-5">
+        <div id="avatarPickerContainer" class="hidden bg-slate-50 dark:bg-slate-750 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Choose Cartoon Avatar</label>
+          <div class="grid grid-cols-6 gap-2 text-2xl">
+            <button type="button" onclick="setAvatar('🐰')" class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:scale-110 transition-transform">🐰</button>
+            <button type="button" onclick="setAvatar('🐱')" class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:scale-110 transition-transform">🐱</button>
+            <button type="button" onclick="setAvatar('🐶')" class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:scale-110 transition-transform">🐶</button>
+            <button type="button" onclick="setAvatar('🦜')" class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:scale-110 transition-transform">🦜</button>
+            <button type="button" onclick="setAvatar('🦊')" class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:scale-110 transition-transform">🦊</button>
+            <button type="button" onclick="setAvatar('🐻')" class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:scale-110 transition-transform">🐻</button>
+          </div>
+        </div>
+
+        <form onsubmit="saveProfileDetails(event)" class="space-y-3">
+          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700 pb-1.5">Account Info</h4>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Username</label>
+              <input type="text" id="profileUsername" value="alex_precision" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Full Name</label>
+              <input type="text" id="profileFullName" value="Alex Morgan" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Email</label>
+              <input type="email" id="profileEmail" value="alex.morgan@example.com" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Phone</label>
+              <input type="tel" id="profilePhone" value="+1 (555) 019-2834" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+          </div>
+
+          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700 pb-1.5 pt-2">Appearance & Theme</h4>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Day / Dark Mode</label>
+              <select id="themeMode" onchange="toggleDarkMode(this.value)" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <option value="light">☀️ Day Mode</option>
+                <option value="dark">🌙 Dark Mode</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Color Theme</label>
+              <select id="colorTheme" onchange="changeColorPalette(this.value)" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <option value="blue">🔵 Precision Blue</option>
+                <option value="emerald">🟢 Emerald Green</option>
+                <option value="violet">🟣 Royal Violet</option>
+                <option value="amber">🟠 Warm Amber</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Preferred Mileage Units</label>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="flex items-center justify-center p-2 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer text-xs font-medium bg-slate-50 dark:bg-slate-700 has-[:checked]:bg-brand-50 has-[:checked]:text-brand-600 has-[:checked]:border-brand-500">
+                <input type="radio" name="units" value="metric" checked class="sr-only">
+                <span>Metric (km / L)</span>
+              </label>
+              <label class="flex items-center justify-center p-2 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer text-xs font-medium bg-slate-50 dark:bg-slate-700 has-[:checked]:bg-brand-50 has-[:checked]:text-brand-600 has-[:checked]:border-brand-500">
+                <input type="radio" name="units" value="imperial" class="sr-only">
+                <span>Imperial (mi / gal)</span>
+              </label>
+            </div>
+          </div>
+
+          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700 pb-1.5 pt-2">Security</h4>
+
+          <div class="space-y-2">
+            <input type="password" placeholder="Current Password" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <input type="password" placeholder="New Password" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+
+          <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs py-3 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 active:scale-[0.99] mt-4">
+            <i class="fa-solid fa-floppy-disk"></i> Save Profile Settings
+          </button>
+        </form>
+
+        <div class="border-t border-slate-100 dark:border-slate-700 pt-3">
+          <button type="button" onclick="handleLogout()" class="w-full bg-red-50 dark:bg-red-950/40 text-red-600 border border-red-100 dark:border-red-900 font-bold text-xs py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 hover:bg-red-100">
+            <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== GLOBAL MODALS ==================== -->
+
+  <!-- MODAL 1: ADD / EDIT VEHICLE -->
+  <div id="vehicleModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
+      <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
+        <h3 id="vehicleModalTitle" class="text-base font-bold text-slate-900 dark:text-white">Add New Vehicle</h3>
+        <button type="button" onclick="closeVehicleModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center"><i class="fa-solid fa-xmark text-base"></i></button>
+      </div>
+
+      <form id="addVehicleForm" onsubmit="event.preventDefault(); closeVehicleModal();" class="p-5 space-y-4 overflow-y-auto">
+        <input type="hidden" id="VehicleID">
+        <div>
+          <label for="VehicleCategory" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Vehicle Category *</label>
+          <select id="VehicleCategory" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3.5 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="Four Wheeler">🚗 Four Wheeler</option>
+            <option value="Two Wheeler">🏍️ Two Wheeler</option>
+          </select>
+        </div>
+
+        <div class="space-y-3">
+          <h4 class="text-xs font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-1">Basic Details</h4>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="VehicleMake" class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Make *</label>
+              <select id="VehicleMake" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <option value="">Select</option>
+              </select>
+            </div>
+            <div>
+              <label for="VehicleModel" class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Model *</label>
+              <input type="text" id="VehicleModel" placeholder="e.g. Camry" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+          </div>
+
+          <div id="VehicleMakeOtherContainer" class="hidden">
+            <label for="VehicleMakeOther" class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Specify Make *</label>
+            <input type="text" id="VehicleMakeOther" placeholder="Enter make name" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="RegistrationNo" class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Registration No. *</label>
+              <input type="text" id="RegistrationNo" placeholder="KL-01-AB-1234" maxlength="13" class="w-full uppercase bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+            <div>
+              <label for="Year" class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Year *</label>
+              <input type="number" id="Year" placeholder="2022" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+          </div>
+
+          <div>
+            <label for="StartingOdometer" class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Starting Odometer (km) *</label>
+            <div class="relative">
+              <i class="fa-solid fa-gauge absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input type="number" id="StartingOdometer" placeholder="45000" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl pl-9 pr-3.5 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <h4 class="text-xs font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-1">Document Expiry</h4>
+          <div>
+            <label for="InsuranceExpiry" class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Insurance Expiry Date</label>
+            <div class="relative">
+              <i class="fa-solid fa-shield-halved absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input type="date" id="InsuranceExpiry" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl pl-9 pr-3.5 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+          </div>
+          <div>
+            <label for="PollutionExpiry" class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Pollution Cert Expiry Date</label>
+            <div class="relative">
+              <i class="fa-solid fa-leaf absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input type="date" id="PollutionExpiry" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl pl-9 pr-3.5 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm py-3 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 active:scale-[0.99]">
+          <i class="fa-solid fa-floppy-disk"></i> Save Vehicle
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: SERVICE LOG RECORD -->
+  <div id="serviceModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
+      <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
+        <h3 id="serviceModalTitle" class="text-base font-bold text-slate-900 dark:text-white">Add Service Record</h3>
+        <button type="button" onclick="closeServiceModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center"><i class="fa-solid fa-xmark text-base"></i></button>
+      </div>
+
+      <form id="serviceForm" onsubmit="event.preventDefault(); closeServiceModal();" class="p-5 space-y-4 overflow-y-auto">
+        <input type="hidden" id="ServiceID">
+
+        <div>
+          <label for="SrvVehicleID" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Choose Vehicle *</label>
+          <select id="SrvVehicleID" required onchange="populateRemarksCheckboxes()" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-sm rounded-xl px-3.5 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="">Select</option>
+            <option value="KL-16-R-0647" data-type="Four Wheeler">🚗 KL-16-R-0647 (Toyota Camry)</option>
+            <option value="KL-01-AB-1253" data-type="Two Wheeler">🏍️ KL-01-AB-1253 (Royal Enfield)</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="ServiceDate" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Service Date *</label>
+            <input type="date" id="ServiceDate" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-sm rounded-xl px-3.5 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+          <div>
+            <label for="ServiceType" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Service Type *</label>
+            <select id="ServiceType" required onchange="toggleOtherServiceType()" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-sm rounded-xl px-3.5 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="General Service">General Service</option>
+              <option value="Oil Change">Oil Change</option>
+              <option value="Repair / Replacement">Repair / Replacement</option>
+              <option value="Periodic Maintenance">Periodic Maintenance</option>
+              <option value="Inspection / Tuning">Inspection / Tuning</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="ServiceTypeOtherContainer" class="hidden">
+          <label for="ServiceTypeOther" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Specify Service Type *</label>
+          <input type="text" id="ServiceTypeOther" placeholder="e.g. Battery Replacement" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-sm rounded-xl px-3.5 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="SrvOdometerReading" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Odometer Reading (km) *</label>
+            <input type="number" id="SrvOdometerReading" placeholder="45000" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-sm rounded-xl px-3.5 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+          <div>
+            <label for="TotalBill" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Total Bill (₹) *</label>
+            <input type="number" id="TotalBill" placeholder="2500" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-sm rounded-xl px-3.5 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="WorkCarriedOutBy" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Work Carried Out By</label>
+            <input type="text" id="WorkCarriedOutBy" placeholder="Technician Name" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-sm rounded-xl px-3.5 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+          <div>
+            <label for="WorkshopName" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Workshop Name</label>
+            <input type="text" id="WorkshopName" placeholder="Garage Name" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-sm rounded-xl px-3.5 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Remarks / Services Completed</label>
+          <div class="bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl overflow-hidden">
+            <div class="p-2 border-b border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input type="text" id="remarkSearch" oninput="filterRemarksList()" placeholder="Search services (e.g. Oil, Brake, Chain)..." class="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-700 text-xs rounded-lg border border-slate-200 dark:border-slate-600 focus:outline-none focus:ring-1 focus:ring-brand-500">
+            </div>
+            <div id="remarksCheckboxList" class="p-3 max-h-48 overflow-y-auto space-y-2 text-xs">
+              <p class="text-slate-400 italic">Please select a vehicle first...</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="remarkOtherContainer" class="hidden">
+          <label for="RemarksOther" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Specific Remarks (Other)</label>
+          <input type="text" id="RemarksOther" placeholder="Enter custom service details..." class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-sm rounded-xl px-3.5 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+
+        <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm py-3 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2">
+          <i class="fa-solid fa-floppy-disk"></i> Save Service Record
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: LOG FUEL FILL-UP -->
+  <div id="fuelModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
+      <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
+        <h3 id="fuelModalTitle" class="text-base font-bold text-slate-900 dark:text-white">Log Fuel Fill-up</h3>
+        <button type="button" onclick="closeFuelModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center"><i class="fa-solid fa-xmark text-base"></i></button>
+      </div>
+
+      <form id="fuelForm" onsubmit="event.preventDefault(); closeFuelModal();" class="p-5 space-y-4 overflow-y-auto">
+        <input type="hidden" id="FuelID">
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="FuelVehicleID" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Vehicle *</label>
+            <select id="FuelVehicleID" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="">Select Vehicle</option>
+              <option value="KL-16-R-0647">🚗 KL-16-R-0647</option>
+              <option value="KL-01-AB-1253">🏍️ KL-01-AB-1253</option>
+            </select>
+          </div>
+          <div>
+            <label for="PetrolType" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Type of Petrol *</label>
+            <select id="PetrolType" required onchange="applySavedRateToForm()" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="Normal E20">Normal E20</option>
+              <option value="Xtra Premium">Xtra Premium</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="FuelCompany" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Fuel Company *</label>
+          <select id="FuelCompany" required onchange="toggleCompanyOther()" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="IndianOil (IOCL)">IndianOil (IOCL)</option>
+            <option value="Bharat Petroleum (BPCL)">Bharat Petroleum (BPCL)</option>
+            <option value="Hindustan Petroleum (HPCL)">Hindustan Petroleum (HPCL)</option>
+            <option value="Nayara Energy">Nayara Energy</option>
+            <option value="Jio-bp (Reliance-BP)">Jio-bp (Reliance-BP)</option>
+            <option value="Shell">Shell</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div id="CompanyOtherContainer" class="hidden">
+          <label for="CompanyOther" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Specify Company Name *</label>
+          <input type="text" id="CompanyOther" placeholder="Enter company name" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="FuelDate" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Date *</label>
+            <input type="date" id="FuelDate" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+          <div>
+            <label for="FuelTime" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Time *</label>
+            <input type="time" id="FuelTime" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="FuelOdometerReading" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Odometer (km) *</label>
+            <input type="number" id="FuelOdometerReading" placeholder="45820" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+          <div>
+            <label for="RatePerLiter" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Rate / Liter (₹) *</label>
+            <input type="number" step="0.01" id="RatePerLiter" placeholder="102.50" required oninput="calculateFromLiters()" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 bg-slate-50 dark:bg-slate-700 p-3 rounded-xl border border-slate-200 dark:border-slate-600">
+          <div>
+            <label for="FuelLiters" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Fuel Filled (Liters)</label>
+            <input type="number" step="0.01" id="FuelLiters" placeholder="0.00" oninput="calculateFromLiters()" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs font-bold rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+          <div>
+            <label for="TotalCost" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Total Cost (₹)</label>
+            <input type="number" step="0.01" id="TotalCost" placeholder="0.00" oninput="calculateFromTotalCost()" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs font-bold rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+        </div>
+
+        <div>
+          <label for="FuelNotes" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Notes (Optional)</label>
+          <input type="text" id="FuelNotes" placeholder="e.g. Full tank" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3.5 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+
+        <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm py-3 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 active:scale-[0.99]">
+          <i class="fa-solid fa-floppy-disk"></i> Save Fuel Log
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== BOTTOM NAVIGATION BAR ==================== -->
+  <nav id="bottomNav" class="fixed bottom-0 left-0 w-full bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 py-2.5 px-3 flex justify-around items-center z-40 transition-colors duration-200">
+    <button type="button" onclick="switchView('dashboard')" id="nav-dashboard" class="nav-item flex flex-col items-center gap-1 text-brand-600 font-semibold">
+      <i class="fa-solid fa-gauge-high text-base"></i>
+      <span class="text-[10px]">Home</span>
+    </button>
+    <button type="button" onclick="switchView('vehicles')" id="nav-vehicles" class="nav-item flex flex-col items-center gap-1 text-slate-400 hover:text-brand-600">
+      <i class="fa-solid fa-car text-base"></i>
+      <span class="text-[10px] font-medium">Vehicles</span>
+    </button>
+    <button type="button" onclick="switchView('services')" id="nav-services" class="nav-item flex flex-col items-center gap-1 text-slate-400 hover:text-brand-600">
+      <i class="fa-solid fa-screwdriver-wrench text-base"></i>
+      <span class="text-[10px] font-medium">Services</span>
+    </button>
+    <button type="button" onclick="switchView('fuel')" id="nav-fuel" class="nav-item flex flex-col items-center gap-1 text-slate-400 hover:text-brand-600">
+      <i class="fa-solid fa-gas-pump text-base"></i>
+      <span class="text-[10px] font-medium">Fuel Log</span>
+    </button>
+    <button type="button" onclick="switchView('analytics')" id="nav-analytics" class="nav-item flex flex-col items-center gap-1 text-slate-400 hover:text-brand-600">
+      <i class="fa-solid fa-chart-pie text-base"></i>
+      <span class="text-[10px] font-medium">Analytics</span>
+    </button>
+  </nav>
+
+  <!-- ==================== APPLICATION CORE LOGIC ==================== -->
+  <script>
+    // Master List of 100+ Vehicle Services (Categorized)
+    const masterServices = {
+      "Two Wheeler": [
+        "Engine Oil Replacement", "Oil Filter Replacement", "Air Filter Cleaning", "Air Filter Replacement",
+        "Spark Plug Cleaning", "Spark Plug Replacement", "Chain Tensioning & Lube", "Chain Sprocket Replacement",
+        "Front Brake Pad Replacement", "Rear Brake Shoe Replacement", "Brake Fluid Top-up", "Brake Fluid Bleeding",
+        "Clutch Cable Adjustment", "Clutch Cable Replacement", "Throttle Cable Adjustment", "Throttle Cable Replacement",
+        "Carburetor Tuning & Cleaning", "Fuel Injector Cleaning", "Battery Charge Check", "Battery Replacement",
+        "Fork Oil & Seal Replacement", "Rear Shock Absorber Inspection", "Tire Pressure Adjustment", "Front Tire Replacement",
+        "Rear Tire Replacement", "Wheel Rim Alignment", "Wheel Bearing Lubrication / Change", "Headlight Bulb Replacement",
+        "Tail Light Bulb Replacement", "Indicator Light Fix", "Horn Repair / Replacement", "Self Starter Motor Repair",
+        "Kick Starter Lubrication", "Fuel Tank Cleaning", "Fuel Petcock / Filter Replacement", "Drive Belt Change (Scooter)",
+        "Variator Roller Replacement (Scooter)", "Gearbox Oil Change (Scooter)", "Engine Valve Clearance Tuning",
+        "Exhaust Pipe Carbon Cleaning", "Side Stand Sensor Fix", "Ignition Switch Repair", "Fuse Replacement",
+        "Chassis Grease Lubrication", "Handlebar Cone Set Replacement", "Mirrors Adjustment / Tightening",
+        "General Washing & Polishing", "Teflon Coating / Detailing", "Puncture Repair", "Vehicle Inspection & Road Test"
+      ],
+      "Four Wheeler": [
+        "Engine Oil Replacement", "Engine Oil Filter Replacement", "Engine Air Filter Replacement", "Cabin AC Filter Replacement",
+        "Fuel Filter Replacement", "Spark Plugs Replacement", "Brake Pad Front Replacement", "Brake Pad Rear Replacement",
+        "Brake Disc Rotor Resurfacing / Change", "Brake Fluid Flush", "Clutch Plate Replacement", "Clutch Fluid Top-up",
+        "Manual Transmission Fluid Change", "Automatic Transmission Fluid Change", "Differential Fluid Service", "Coolant Top-up",
+        "Coolant System Flush", "Radiator Cleaning & Inspection", "Radiator Hose Replacement", "Engine Drive Belt / Serpentine Belt",
+        "Timing Belt / Chain Replacement", "Wheel Alignment", "Wheel Balancing", "Tire Rotation", "Tire Replacement (Set/Single)",
+        "Battery Health Check", "Battery Terminal Cleaning", "Battery Replacement", "Alternator Test / Repair", "Starter Motor Repair",
+        "Suspension Strut / Shock Absorber Front", "Suspension Strut / Shock Absorber Rear", "Bushing & Arm Replacement",
+        "Tie Rod End Replacement", "Steering Rack Repair / Fluid Top-up", "Power Steering Fluid Flush", "AC Gas Top-up (Refrigerant)",
+        "AC Compressor Service", "AC Evaporator Cleaning", "Wiper Blades Front Replacement", "Wiper Blade Rear Replacement",
+        "Windshield Washer Fluid Top-up", "Headlight Alignment / Bulb Change", "Fog Light Replacement", "Tail Light / Brake Light Bulb",
+        "Fuse Box Inspection", "OBD2 Engine Diagnostic Scan", "EGR Valve Cleaning", "Throttle Body Cleaning",
+        "Catalytic Converter Inspection", "DPF Cleaning (Diesel)", "Exhaust System Repair", "Door Latch / Hinge Lubrication",
+        "Power Window Mechanism Repair", "Interior Deep Cleaning / Vacuum", "Exterior Foam Wash & Wax", "Ceramic Coating / Paint Protection",
+        "Underbody Anti-Rust Coating", "Rat Repellent Treatment", "Wheel Cylinder Repair", "Puncture Repair / Stepney Check"
+      ]
+    };
+
+    let efficiencyChartInstance = null;
+    let expenseChartInstance = null;
+    let currentEfficiencyChartType = 'line';
+    let currentActiveView = 'dashboard';
+
+    // Auth & Navigation Engine
+    function handleLogin(e) {
+      e.preventDefault();
+      document.getElementById('mainHeader').classList.remove('hidden');
+      document.getElementById('bottomNav').classList.remove('hidden');
+      switchView('dashboard');
+    }
+
+    function handleLogout() {
+      document.getElementById('mainHeader').classList.add('hidden');
+      document.getElementById('bottomNav').classList.add('hidden');
+      switchView('login');
+    }
+
+    function switchView(viewName) {
+      currentActiveView = viewName;
+      document.querySelectorAll('.app-view').forEach(view => view.classList.add('hidden'));
+      document.querySelectorAll('.nav-item').forEach(nav => {
+        nav.className = 'nav-item flex flex-col items-center gap-1 text-slate-400 hover:text-brand-600';
+      });
+
+      const activeNav = document.getElementById(`nav-${viewName}`);
+      if (activeNav) {
+        activeNav.className = 'nav-item flex flex-col items-center gap-1 text-brand-600 font-semibold';
+      }
+
+      const activeView = document.getElementById(`view-${viewName}`);
+      if (activeView) {
+        activeView.classList.remove('hidden');
+      }
+
+      if (viewName !== 'login') {
+        updateHeader(viewName);
+      }
+
+      if (viewName === 'analytics') {
+        setTimeout(initCharts, 100);
+      }
+    }
+
+    function updateHeader(viewName) {
+      const icon = document.getElementById('headerIcon');
+      const title = document.getElementById('headerTitle');
+      const sub = document.getElementById('headerSubtitle');
+      const actions = document.getElementById('headerActions');
+
+      actions.innerHTML = '';
+
+      if (viewName === 'dashboard') {
+        icon.className = 'fa-solid fa-gauge-high text-base';
+        title.textContent = 'AutoCare';
+        sub.textContent = 'Fleet Overview & Dashboard';
+      } else if (viewName === 'vehicles') {
+        icon.className = 'fa-solid fa-car text-base';
+        title.textContent = 'Vehicle Management';
+        sub.textContent = 'Manage registered vehicles & document validity';
+        actions.innerHTML = `<button type="button" onclick="openVehicleModal()" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold px-3.5 py-2 rounded-xl shadow-sm transition-all flex items-center gap-1.5 active:scale-95"><i class="fa-solid fa-plus text-xs"></i> Add Vehicle</button>`;
+      } else if (viewName === 'services') {
+        icon.className = 'fa-solid fa-screwdriver-wrench text-base';
+        title.textContent = 'Service Logs';
+        sub.textContent = 'Track history & maintenance rules';
+        actions.innerHTML = `<button type="button" onclick="openServiceModal()" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold px-3.5 py-2 rounded-xl shadow-sm transition-all flex items-center gap-1.5 active:scale-95"><i class="fa-solid fa-plus text-xs"></i> Add Log</button>`;
+      } else if (viewName === 'fuel') {
+        icon.className = 'fa-solid fa-gas-pump text-base';
+        title.textContent = 'Fuel & Mileage Tracker';
+        sub.textContent = 'Track fuel fill-ups, mileage, and monthly expenses';
+      } else if (viewName === 'analytics') {
+        icon.className = 'fa-solid fa-chart-pie text-base';
+        title.textContent = 'Fleet Analytics';
+        sub.textContent = 'Track fuel efficiency, expenses & maintenance';
+        actions.innerHTML = `<select id="vehicleFilter" onchange="updateCharts()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 shadow-sm"><option value="ALL">All Vehicles</option><option value="KL-16-R-0647">🚗 Camry</option><option value="KL-01-AB-1253">🏍️ Hunter 350</option></select>`;
+      } else if (viewName === 'profile') {
+        icon.className = 'fa-solid fa-user-gear text-base';
+        title.textContent = 'Profile & Settings';
+        sub.textContent = 'Preferences, Themes & Account Management';
+      }
+    }
+
+    // Profile & Customizations
+    function openAvatarSelector() {
+      document.getElementById('avatarPickerContainer').classList.toggle('hidden');
+    }
+
+    function setAvatar(emoji) {
+      document.getElementById('selectedAvatar').textContent = emoji;
+      document.getElementById('headerAvatarDisplay').textContent = emoji;
+      document.getElementById('avatarPickerContainer').classList.add('hidden');
+    }
+
+    function toggleDarkMode(mode) {
+      if (mode === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+
+    function changeColorPalette(themeName) {
+      document.body.classList.remove('theme-emerald', 'theme-violet', 'theme-amber');
+      if (themeName !== 'blue') {
+        document.body.classList.add(`theme-${themeName}`);
+      }
+    }
+
+    function saveProfileDetails(e) {
+      e.preventDefault();
+      const uName = document.getElementById('profileUsername').value;
+      const fullName = document.getElementById('profileFullName').value;
+      document.getElementById('profileDisplayName').textContent = fullName || 'Alex Morgan';
+      document.getElementById('profileDisplayUsername').textContent = uName ? `@${uName}` : '@alex_precision';
+      alert('Profile Settings updated successfully!');
+    }
+
+    // Vehicles Functions
+    function toggleMenu(btn) {
+      document.querySelectorAll('.menu-dropdown').forEach(m => {
+        if (m !== btn.nextElementSibling) m.classList.add('hidden');
+      });
+      btn.nextElementSibling.classList.toggle('hidden');
+    }
+
+    function moveVehicle(btn, dir) {
+      const card = btn.closest('[data-vehicle-id]');
+      const parent = card.parentNode;
+      if (dir === 'up' && card.previousElementSibling) parent.insertBefore(card, card.previousElementSibling);
+      if (dir === 'down' && card.nextElementSibling) parent.insertBefore(card.nextElementSibling, card);
+      btn.closest('.menu-dropdown').classList.add('hidden');
+    }
+
+    function deleteVehicle(btn) {
+      const card = btn.closest('[data-vehicle-id]');
+      if (confirm(`Delete vehicle record?`)) card.remove();
+    }
+
+    function openVehicleModal() {
+      document.getElementById('vehicleModalTitle').textContent = 'Add New Vehicle';
+      document.getElementById('addVehicleForm').reset();
+      populateMakes();
+      document.getElementById('vehicleModal').classList.remove('hidden');
+    }
+
+    function closeVehicleModal() {
+      document.getElementById('vehicleModal').classList.add('hidden');
+    }
+
+    function editVehicle(vehicleId) {
+      document.getElementById('vehicleModalTitle').textContent = 'Edit Vehicle Details';
+      document.getElementById('VehicleID').value = vehicleId;
+      if (vehicleId === 'VEH-1001') {
+        document.getElementById('VehicleCategory').value = 'Four Wheeler';
+        populateMakes();
+        document.getElementById('VehicleMake').value = 'Toyota';
+        document.getElementById('VehicleModel').value = 'Camry';
+        document.getElementById('RegistrationNo').value = 'KL-16-R-0647';
+        document.getElementById('Year').value = '2022';
+        document.getElementById('StartingOdometer').value = '45000';
+      }
+      document.getElementById('vehicleModal').classList.remove('hidden');
+    }
+
+    const makesList = {
+      "Four Wheeler": ["Maruti Suzuki", "Honda", "Mahindra", "Tata Motors", "Hyundai", "Toyota", "Kia", "Other"],
+      "Two Wheeler": ["Hero MotoCorp", "Honda", "TVS Motor", "Bajaj Auto", "Suzuki", "Royal Enfield", "Other"]
+    };
+
+    function populateMakes() {
+      const cat = document.getElementById('VehicleCategory').value;
+      const select = document.getElementById('VehicleMake');
+      select.innerHTML = '<option value="">Select</option>';
+      (makesList[cat] || []).forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        select.appendChild(opt);
+      });
+    }
+
+    document.getElementById('VehicleCategory').addEventListener('change', populateMakes);
+
+    // Services Functions
+    function openServiceModal(vId = '') {
+      document.getElementById('serviceModalTitle').textContent = 'Add Service Record';
+      document.getElementById('serviceForm').reset();
+      document.getElementById('ServiceDate').valueAsDate = new Date();
+      if (vId) document.getElementById('SrvVehicleID').value = vId;
+      populateRemarksCheckboxes();
+      toggleOtherServiceType();
+      toggleRemarkOtherInput();
+      document.getElementById('serviceModal').classList.remove('hidden');
+    }
+
+    function closeServiceModal() {
+      document.getElementById('serviceModal').classList.add('hidden');
+    }
+
+    function populateRemarksCheckboxes(selectedValues = []) {
+      const vehicleSelect = document.getElementById('SrvVehicleID');
+      const selectedOption = vehicleSelect.options[vehicleSelect.selectedIndex];
+      const category = selectedOption ? selectedOption.getAttribute('data-type') : null;
+      const listContainer = document.getElementById('remarksCheckboxList');
+
+      document.getElementById('remarkSearch').value = '';
+
+      if (!category || !masterServices[category]) {
+        listContainer.innerHTML = '<p class="text-slate-400 italic">Please select a vehicle first...</p>';
+        return;
+      }
+
+      const items = masterServices[category];
+      let html = '';
+
+      items.forEach(item => {
+        const isChecked = selectedValues.includes(item) ? 'checked' : '';
+        html += `
+          <label class="remark-option flex items-center gap-2 cursor-pointer hover:text-brand-600 text-slate-700 dark:text-slate-200">
+            <input type="checkbox" value="${item}" ${isChecked} class="remark-item rounded text-brand-600 focus:ring-brand-500"> ${item}
+          </label>
+        `;
+      });
+
+      const isOtherChecked = selectedValues.includes('Other') ? 'checked' : '';
+      html += `
+        <label class="remark-option flex items-center gap-2 cursor-pointer hover:text-brand-600 text-slate-700 dark:text-slate-200 pt-1 border-t border-slate-200 dark:border-slate-600">
+          <input type="checkbox" id="remarkOtherCheckbox" ${isOtherChecked} onchange="toggleRemarkOtherInput()" class="rounded text-brand-600 focus:ring-brand-500"> 
+          <strong>Other (Custom Note)</strong>
+        </label>
+      `;
+
+      listContainer.innerHTML = html;
+      toggleRemarkOtherInput();
+    }
+
+    function filterRemarksList() {
+      const query = document.getElementById('remarkSearch').value.toLowerCase();
+      const options = document.querySelectorAll('.remark-option');
+
+      options.forEach(opt => {
+        const text = opt.textContent.toLowerCase();
+        if (text.includes(query)) {
+          opt.classList.remove('hidden');
+        } else {
+          opt.classList.add('hidden');
+        }
+      });
+    }
+
+    function toggleOtherServiceType() {
+      const val = document.getElementById('ServiceType').value;
+      document.getElementById('ServiceTypeOtherContainer').classList.toggle('hidden', val !== 'Other');
+    }
+
+    function toggleRemarkOtherInput() {
+      const cb = document.getElementById('remarkOtherCheckbox');
+      const container = document.getElementById('remarkOtherContainer');
+      if (cb && cb.checked) {
+        container.classList.remove('hidden');
+      } else if (container) {
+        container.classList.add('hidden');
+        document.getElementById('RemarksOther').value = '';
+      }
+    }
+
+    function deleteService(btn) {
+      if (confirm('Delete this service record?')) btn.closest('[data-service-id]').remove();
+    }
+
+    function editService(srvId) {
+      document.getElementById('serviceModalTitle').textContent = 'Edit Service Record';
+      document.getElementById('ServiceID').value = srvId;
+      document.getElementById('SrvVehicleID').value = 'KL-16-R-0647';
+      document.getElementById('ServiceType').value = 'Periodic Maintenance';
+      document.getElementById('SrvOdometerReading').value = 45000;
+      document.getElementById('TotalBill').value = 4250;
+      document.getElementById('WorkCarriedOutBy').value = 'Suresh (Mechanic)';
+      document.getElementById('WorkshopName').value = 'Toyota Authorized Service';
+
+      populateRemarksCheckboxes([
+        'Engine Oil Replacement',
+        'Engine Oil Filter Replacement',
+        'Wheel Alignment',
+        'Other'
+      ]);
+
+      document.getElementById('RemarksOther').value = 'Replaced front left indicator light';
+
+      toggleOtherServiceType();
+      document.getElementById('serviceModal').classList.remove('hidden');
+    }
+
+    // Fuel Tracker Functions
+    function autoSaveRates() {
+      localStorage.setItem('autoCare_rateE20', document.getElementById('rateE20').value);
+      localStorage.setItem('autoCare_ratePremium', document.getElementById('ratePremium').value);
+    }
+
+    function applySavedRateToForm() {
+      const pType = document.getElementById('PetrolType').value;
+      const rateInput = document.getElementById('RatePerLiter');
+      rateInput.value = (pType === 'Xtra Premium') 
+        ? (localStorage.getItem('autoCare_ratePremium') || '108.00')
+        : (localStorage.getItem('autoCare_rateE20') || '102.50');
+      calculateFromLiters();
+    }
+
+    function calculateFromLiters() {
+      const l = parseFloat(document.getElementById('FuelLiters').value) || 0;
+      const r = parseFloat(document.getElementById('RatePerLiter').value) || 0;
+      if (l && r) document.getElementById('TotalCost').value = (l * r).toFixed(2);
+    }
+
+    function calculateFromTotalCost() {
+      const t = parseFloat(document.getElementById('TotalCost').value) || 0;
+      const r = parseFloat(document.getElementById('RatePerLiter').value) || 0;
+      if (t && r) document.getElementById('FuelLiters').value = (t / r).toFixed(2);
+    }
+
+    function toggleCompanyOther() {
+      const company = document.getElementById('FuelCompany').value;
+      document.getElementById('CompanyOtherContainer').classList.toggle('hidden', company !== 'Other');
+    }
+
+    function openFuelModal(vId = '') {
+      document.getElementById('fuelForm').reset();
+      document.getElementById('FuelDate').valueAsDate = new Date();
+      document.getElementById('FuelTime').value = new Date().toTimeString().substring(0, 5);
+      if (vId) document.getElementById('FuelVehicleID').value = vId;
+      applySavedRateToForm();
+      document.getElementById('fuelModal').classList.remove('hidden');
+    }
+
+    function closeFuelModal() {
+      document.getElementById('fuelModal').classList.add('hidden');
+    }
+
+    // Analytics Engine
+    function initCharts() {
+      renderEfficiencyChart(currentEfficiencyChartType);
+      renderExpenseChart();
+    }
+
+    function renderEfficiencyChart(type = 'line') {
+      const ctx = document.getElementById('efficiencyChart');
+      if (!ctx) return;
+      if (efficiencyChartInstance) efficiencyChartInstance.destroy();
+
+      efficiencyChartInstance = new Chart(ctx.getContext('2d'), {
+        type: type,
+        data: {
+          labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+          datasets: [{
+            label: 'Avg Mileage (km/L)',
+            data: [20.1, 21.4, 21.0, 22.2, 21.8, 22.8],
+            borderColor: '#2563eb',
+            backgroundColor: type === 'line' ? 'rgba(37, 99, 235, 0.1)' : '#3b82f6',
+            fill: type === 'line',
+            tension: 0.35
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+      });
+    }
+
+    function setEfficiencyChartType(type) {
+      currentEfficiencyChartType = type;
+      renderEfficiencyChart(type);
+      document.getElementById('btnLine').className = type === 'line' ? 'px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-brand-600 shadow-sm' : 'px-2.5 py-1 rounded-lg';
+      document.getElementById('btnBar').className = type === 'bar' ? 'px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-brand-600 shadow-sm' : 'px-2.5 py-1 rounded-lg';
+    }
+
+    function renderExpenseChart() {
+      const ctx = document.getElementById('expenseChart');
+      if (!ctx) return;
+      if (expenseChartInstance) expenseChartInstance.destroy();
+
+      expenseChartInstance = new Chart(ctx.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Fuel Costs', 'Services'],
+          datasets: [{ data: [5488, 4250], backgroundColor: ['#2563eb', '#93c5fd'], borderWidth: 0 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false } } }
+      });
+    }
+
+    function updateCharts() {
+      initCharts();
+    }
+
+    // Menu Guard
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.relative')) {
+        document.querySelectorAll('.menu-dropdown').forEach(d => d.classList.add('hidden'));
+      }
+    });
+
+    // App Boot
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('rateE20').value = localStorage.getItem('autoCare_rateE20') || '102.50';
+      document.getElementById('ratePremium').value = localStorage.getItem('autoCare_ratePremium') || '108.00';
+      populateMakes();
+      switchView('dashboard');
+    });
+  </script>
+
+</body>
+</html>
