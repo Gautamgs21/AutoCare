@@ -135,10 +135,7 @@
             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Email Address</label>
             <div class="relative">
               <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-              <input type="email" id="loginEmail" required value="alex.morgan@example.com" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl pl-9 pr-3.5 py-3 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
-            </div>
-          </div>
-
+              <input type="email" id="loginEmail" required placeholder="name@example.com" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl pl-9 pr-3.5 py-3 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div>
             <div class="flex justify-between items-center mb-1">
               <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Password</label>
@@ -146,7 +143,7 @@
             </div>
             <div class="relative">
               <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-              <input type="password" id="loginPassword" required value="••••••••" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl pl-9 pr-3.5 py-3 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <input type="password" id="loginPassword" required placeholder="Enter password" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl pl-9 pr-3.5 py-3 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">   
             </div>
           </div>
 
@@ -1177,8 +1174,28 @@
 
     // DYNAMIC RENDER 6: SETTINGS
     function applySettingsData() {
-      if (!appData.settings || !appData.settings.length) return;
-      const s = appData.settings[appData.settings.length - 1]; // latest settings row
+      const emailInput = document.getElementById('loginEmail');
+      const passwordInput = document.getElementById('loginPassword');
+    
+      // 1. If no settings exist in Google Sheets, clear all fields
+      if (!appData.settings || !appData.settings.length) {
+        if (emailInput) emailInput.value = '';
+        if (passwordInput) passwordInput.value = '';
+        return;
+      }
+    
+      // 2. Fetch the latest saved record from the "settings" sheet tab
+      const s = appData.settings[appData.settings.length - 1];
+    
+      // 3. Pre-fill login email/username from sheet data, but leave password empty
+      if (emailInput) {
+        emailInput.value = s.Email || s.Username || '';
+      }
+      if (passwordInput) {
+        passwordInput.value = ''; // Always keep password empty
+      }
+    
+      // 4. Pre-fill profile section data
       if (s.Username) {
         document.getElementById('profileUsername').value = s.Username;
         document.getElementById('profileDisplayUsername').textContent = `@${s.Username}`;
@@ -1186,6 +1203,8 @@
       if (s.FullName) {
         document.getElementById('profileFullName').value = s.FullName;
         document.getElementById('profileDisplayName').textContent = s.FullName;
+        const loginFullName = document.getElementById('loginFullName');
+        if (loginFullName) loginFullName.value = s.FullName;
       }
       if (s.Email) document.getElementById('profileEmail').value = s.Email;
       if (s.Avatar) {
