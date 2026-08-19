@@ -732,7 +732,7 @@
         <button type="button" onclick="closeVehicleModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center"><i class="fa-solid fa-xmark text-base"></i></button>
       </div>
 
-      <form id="addVehicleForm" onsubmit="event.preventDefault(); closeVehicleModal();" class="p-5 space-y-4 overflow-y-auto">
+      <form id="addVehicleForm" class="p-5 space-y-4 overflow-y-auto">
         <input type="hidden" id="VehicleID">
         <div>
           <label for="VehicleCategory" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Vehicle Category *</label>
@@ -815,7 +815,7 @@
         <button type="button" onclick="closeServiceModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center"><i class="fa-solid fa-xmark text-base"></i></button>
       </div>
 
-      <form id="serviceForm" onsubmit="event.preventDefault(); closeServiceModal();" class="p-5 space-y-4 overflow-y-auto">
+      <form id="serviceForm" class="p-5 space-y-4 overflow-y-auto">
         <input type="hidden" id="ServiceID">
 
         <div>
@@ -905,7 +905,7 @@
         <button type="button" onclick="closeFuelModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center"><i class="fa-solid fa-xmark text-base"></i></button>
       </div>
 
-      <form id="fuelForm" onsubmit="event.preventDefault(); closeFuelModal();" class="p-5 space-y-4 overflow-y-auto">
+      <form id="fuelForm" class="p-5 space-y-4 overflow-y-auto">
         <input type="hidden" id="FuelID">
 
         <div class="grid grid-cols-2 gap-3">
@@ -1468,86 +1468,85 @@
       switchView('dashboard');
     });
 
-      document.getElementById('serviceForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const selectedRemarks = Array.from(document.querySelectorAll('.remark-item:checked')).map(cb => cb.value);
-        if (document.getElementById('remarkOtherCheckbox')?.checked) {
-          const customNote = document.getElementById('RemarksOther').value;
-          if (customNote) selectedRemarks.push(customNote);
-        }
+    // Form Submissions
+    document.getElementById('serviceForm').addEventListener('submit', function(e) {
+      e.preventDefault();
       
-        const serviceData = {
-          ServiceID: document.getElementById('ServiceID').value,
-          VehicleID: document.getElementById('SrvVehicleID').value,
-          ServiceDate: document.getElementById('ServiceDate').value,
-          ServiceType: document.getElementById('ServiceType').value,
-          ServiceTypeOther: document.getElementById('ServiceTypeOther').value || '',
-          OdometerReading: document.getElementById('SrvOdometerReading').value,
-          TotalBill: document.getElementById('TotalBill').value,
-          WorkCarriedOutBy: document.getElementById('WorkCarriedOutBy').value,
-          WorkshopName: document.getElementById('WorkshopName').value,
-          Remarks: selectedRemarks.join(', ')
-        };
-      
-        google.script.run
-          .withSuccessHandler(() => {
-            closeServiceModal();
-            alert('Service log saved!');
-          })
-          .saveService(serviceData);
-      });
+      const selectedRemarks = Array.from(document.querySelectorAll('.remark-item:checked')).map(cb => cb.value);
+      if (document.getElementById('remarkOtherCheckbox')?.checked) {
+        const customNote = document.getElementById('RemarksOther').value;
+        if (customNote) selectedRemarks.push(customNote);
+      }
+    
+      const serviceData = {
+        ServiceID: document.getElementById('ServiceID').value,
+        VehicleID: document.getElementById('SrvVehicleID').value,
+        ServiceDate: document.getElementById('ServiceDate').value,
+        ServiceType: document.getElementById('ServiceType').value,
+        ServiceTypeOther: document.getElementById('ServiceTypeOther').value || '',
+        OdometerReading: document.getElementById('SrvOdometerReading').value,
+        TotalBill: document.getElementById('TotalBill').value,
+        WorkCarriedOutBy: document.getElementById('WorkCarriedOutBy').value,
+        WorkshopName: document.getElementById('WorkshopName').value,
+        Remarks: selectedRemarks.join(', ')
+      };
+    
+      google.script.run
+        .withSuccessHandler(() => {
+          closeServiceModal();
+          alert('Service log saved!');
+        })
+        .saveService(serviceData);
+    });
 
+    document.getElementById('fuelForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+    
+      const fuelData = {
+        FuelID: document.getElementById('FuelID').value,
+        RegistrationNo: document.getElementById('FuelVehicleID').value,
+        PetrolType: document.getElementById('PetrolType').value,
+        FuelCompany: document.getElementById('FuelCompany').value,
+        CompanyOther: document.getElementById('CompanyOther').value || '',
+        FuelDate: document.getElementById('FuelDate').value,
+        FuelTime: document.getElementById('FuelTime').value,
+        OdometerReading: document.getElementById('FuelOdometerReading').value,
+        RatePerLiter: document.getElementById('RatePerLiter').value,
+        FuelLiters: document.getElementById('FuelLiters').value,
+        TotalCost: document.getElementById('TotalCost').value,
+        FuelNotes: document.getElementById('FuelNotes').value
+      };
+    
+      google.script.run
+        .withSuccessHandler(() => {
+          closeFuelModal();
+          alert('Fuel log saved!');
+        })
+        .saveFuelLog(fuelData);
+    });
 
-      document.getElementById('fuelForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-      
-        const fuelData = {
-          FuelID: document.getElementById('FuelID').value,
-          RegistrationNo: document.getElementById('FuelVehicleID').value,
-          PetrolType: document.getElementById('PetrolType').value,
-          FuelCompany: document.getElementById('FuelCompany').value,
-          CompanyOther: document.getElementById('CompanyOther').value || '',
-          FuelDate: document.getElementById('FuelDate').value,
-          FuelTime: document.getElementById('FuelTime').value,
-          OdometerReading: document.getElementById('FuelOdometerReading').value,
-          RatePerLiter: document.getElementById('RatePerLiter').value,
-          FuelLiters: document.getElementById('FuelLiters').value,
-          TotalCost: document.getElementById('TotalCost').value,
-          FuelNotes: document.getElementById('FuelNotes').value
-        };
-      
-        google.script.run
-          .withSuccessHandler(() => {
-            closeFuelModal();
-            alert('Fuel log saved!');
-          })
-          .saveFuelLog(fuelData);
-      });
-
-      document.getElementById('addVehicleForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-      
-        const vehicleData = {
-          VehicleID: document.getElementById('VehicleID').value,
-          VehicleCategory: document.getElementById('VehicleCategory').value,
-          VehicleMake: document.getElementById('VehicleMake').value,
-          VehicleModel: document.getElementById('VehicleModel').value,
-          RegistrationNo: document.getElementById('RegistrationNo').value,
-          Year: document.getElementById('Year').value,
-          StartingOdometer: document.getElementById('StartingOdometer').value,
-          InsuranceExpiry: document.getElementById('InsuranceExpiry').value,
-          PollutionExpiry: document.getElementById('PollutionExpiry').value
-        };
-      
-        google.script.run
-          .withSuccessHandler(() => {
-            closeVehicleModal();
-            alert('Vehicle saved!');
-          })
-          .saveVehicle(vehicleData);
-      });
-
+    document.getElementById('addVehicleForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+    
+      const vehicleData = {
+        VehicleID: document.getElementById('VehicleID').value,
+        VehicleCategory: document.getElementById('VehicleCategory').value,
+        VehicleMake: document.getElementById('VehicleMake').value,
+        VehicleModel: document.getElementById('VehicleModel').value,
+        RegistrationNo: document.getElementById('RegistrationNo').value,
+        Year: document.getElementById('Year').value,
+        StartingOdometer: document.getElementById('StartingOdometer').value,
+        InsuranceExpiry: document.getElementById('InsuranceExpiry').value,
+        PollutionExpiry: document.getElementById('PollutionExpiry').value
+      };
+    
+      google.script.run
+        .withSuccessHandler(() => {
+          closeVehicleModal();
+          alert('Vehicle saved!');
+        })
+        .saveVehicle(vehicleData);
+    });
   </script>
 
 </body>
