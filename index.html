@@ -84,7 +84,7 @@
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col items-center justify-start p-4 sm:p-6 pb-24 transition-colors duration-200">
 
   <!-- ==================== TOP HEADER ==================== -->
-  <header id="mainHeader" class="w-full max-w-2xl py-2 mb-3 flex items-center justify-between">
+  <header id="mainHeader" class="w-full max-w-2xl py-2 mb-3 flex items-center justify-between hidden">
     <div class="flex items-center gap-3">
       <div class="w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold">
         <i id="headerIcon" class="fa-solid fa-gauge-high text-base"></i>
@@ -114,11 +114,23 @@
           <div class="w-14 h-14 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto text-2xl font-bold shadow-sm">
             <i class="fa-solid fa-car-side"></i>
           </div>
-          <h2 class="text-xl font-extrabold text-slate-900 dark:text-white">Welcome Back</h2>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Sign in to manage your fleet & maintenance</p>
+          <h2 id="authTitle" class="text-xl font-extrabold text-slate-900 dark:text-white">Welcome Back</h2>
+          <p id="authSubtitle" class="text-xs text-slate-500 dark:text-slate-400">Sign in to manage your fleet & maintenance</p>
         </div>
 
-        <form onsubmit="handleLogin(event)" class="space-y-4">
+        <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+          <input type="hidden" id="authMode" value="login">
+
+          <div id="signUpFields" class="hidden space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Full Name</label>
+              <div class="relative">
+                <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="loginFullName" placeholder="e.g. Alex Morgan" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl pl-9 pr-3.5 py-3 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              </div>
+            </div>
+          </div>
+
           <div>
             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Email Address</label>
             <div class="relative">
@@ -130,7 +142,7 @@
           <div>
             <div class="flex justify-between items-center mb-1">
               <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Password</label>
-              <a href="#" onclick="alert('Password reset link sent to email.')" class="text-[11px] font-semibold text-brand-600 hover:underline">Forgot?</a>
+              <a href="#" id="forgotPasswordBtn" onclick="alert('Password reset link sent to email.')" class="text-[11px] font-semibold text-brand-600 hover:underline">Forgot?</a>
             </div>
             <div class="relative">
               <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
@@ -138,7 +150,7 @@
             </div>
           </div>
 
-          <div class="flex items-center justify-between text-xs">
+          <div id="rememberMeContainer" class="flex items-center justify-between text-xs">
             <label class="flex items-center gap-2 cursor-pointer text-slate-600 dark:text-slate-400">
               <input type="checkbox" checked class="rounded text-brand-600 focus:ring-brand-500">
               <span>Remember me</span>
@@ -146,15 +158,20 @@
           </div>
 
           <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm py-3 rounded-xl shadow-md transition-all active:scale-[0.99] flex items-center justify-center gap-2">
-            <span>Sign In</span>
+            <span id="authBtnText">Sign In</span>
             <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
           </button>
         </form>
+
+        <div class="text-center text-xs text-slate-500 pt-2 border-t border-slate-100 dark:border-slate-700">
+          <span id="toggleAuthPrompt">Don't have an account?</span>
+          <button type="button" onclick="toggleAuthMode()" id="toggleAuthBtn" class="font-bold text-brand-600 hover:underline ml-1">Create Account</button>
+        </div>
       </div>
     </section>
 
     <!-- VIEW 1: HOME DASHBOARD -->
-    <section id="view-dashboard" class="app-view space-y-4">
+    <section id="view-dashboard" class="app-view hidden space-y-4">
       <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm relative overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-500 to-brand-700"></div>
 
@@ -726,7 +743,7 @@
   </div>
 
   <!-- ==================== BOTTOM NAVIGATION BAR ==================== -->
-  <nav id="bottomNav" class="fixed bottom-0 left-0 w-full bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 py-2.5 px-3 flex justify-around items-center z-40 transition-colors duration-200">
+  <nav id="bottomNav" class="fixed bottom-0 left-0 w-full bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 py-2.5 px-3 flex justify-around items-center z-40 transition-colors duration-200 hidden">
     <button type="button" onclick="switchView('dashboard')" id="nav-dashboard" class="nav-item flex flex-col items-center gap-1 text-brand-600 font-semibold">
       <i class="fa-solid fa-gauge-high text-base"></i>
       <span class="text-[10px]">Home</span>
@@ -801,7 +818,7 @@
     let efficiencyChartInstance = null;
     let expenseChartInstance = null;
     let currentEfficiencyChartType = 'line';
-    let currentActiveView = 'dashboard';
+    let currentActiveView = 'login';
 
     // 1. DATA FETCHING FROM GOOGLE SHEETS
     async function loadDataFromSheets() {
@@ -1186,16 +1203,71 @@
     }
 
     // Auth & Navigation Engine
-    function handleLogin(e) {
+    function toggleAuthMode() {
+      const modeInput = document.getElementById('authMode');
+      const signUpFields = document.getElementById('signUpFields');
+      const btnText = document.getElementById('authBtnText');
+      const promptText = document.getElementById('toggleAuthPrompt');
+      const toggleBtn = document.getElementById('toggleAuthBtn');
+      const forgotBtn = document.getElementById('forgotPasswordBtn');
+      const title = document.getElementById('authTitle');
+      const subtitle = document.getElementById('authSubtitle');
+      const rememberMe = document.getElementById('rememberMeContainer');
+
+      if (modeInput.value === 'login') {
+        modeInput.value = 'signup';
+        signUpFields.classList.remove('hidden');
+        btnText.textContent = 'Create Account';
+        promptText.textContent = 'Already have an account?';
+        toggleBtn.textContent = 'Sign In';
+        title.textContent = 'Create Account';
+        subtitle.textContent = 'Sign up to start tracking your fleet';
+        forgotBtn.classList.add('hidden');
+        rememberMe.classList.add('hidden');
+      } else {
+        modeInput.value = 'login';
+        signUpFields.classList.add('hidden');
+        btnText.textContent = 'Sign In';
+        promptText.textContent = "Don't have an account?";
+        toggleBtn.textContent = 'Create Account';
+        title.textContent = 'Welcome Back';
+        subtitle.textContent = 'Sign in to manage your fleet & maintenance';
+        forgotBtn.classList.remove('hidden');
+        rememberMe.classList.remove('hidden');
+      }
+    }
+
+    async function handleAuthSubmit(e) {
       e.preventDefault();
+      const mode = document.getElementById('authMode').value;
+      const email = document.getElementById('loginEmail').value;
+
+      if (mode === 'signup') {
+        const fullName = document.getElementById('loginFullName').value;
+        const newSettings = {
+          Username: email.split('@')[0],
+          FullName: fullName || 'New User',
+          Email: email,
+          Password: document.getElementById('loginPassword').value,
+          ThemeMode: 'light',
+          ColorTheme: 'blue',
+          Units: 'metric',
+          Avatar: '🐰'
+        };
+
+        await sendToSheet('saveSettings', newSettings);
+      }
+
       document.getElementById('mainHeader').classList.remove('hidden');
       document.getElementById('bottomNav').classList.remove('hidden');
       switchView('dashboard');
     }
 
+    function handleLogin(e) {
+      handleAuthSubmit(e);
+    }
+
     function handleLogout() {
-      document.getElementById('mainHeader').classList.add('hidden');
-      document.getElementById('bottomNav').classList.add('hidden');
       switchView('login');
     }
 
@@ -1216,7 +1288,12 @@
         activeView.classList.remove('hidden');
       }
 
-      if (viewName !== 'login') {
+      if (viewName === 'login') {
+        document.getElementById('mainHeader').classList.add('hidden');
+        document.getElementById('bottomNav').classList.add('hidden');
+      } else {
+        document.getElementById('mainHeader').classList.remove('hidden');
+        document.getElementById('bottomNav').classList.remove('hidden');
         updateHeader(viewName);
       }
 
@@ -1594,7 +1671,7 @@
       document.getElementById('rateE20').value = localStorage.getItem('autoCare_rateE20') || '102.50';
       document.getElementById('ratePremium').value = localStorage.getItem('autoCare_ratePremium') || '108.00';
       populateMakes();
-      switchView('dashboard');
+      switchView('login');
       loadDataFromSheets();
     });
 
