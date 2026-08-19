@@ -1162,11 +1162,20 @@
 
     function saveProfileDetails(e) {
       e.preventDefault();
-      const uName = document.getElementById('profileUsername').value;
-      const fullName = document.getElementById('profileFullName').value;
-      document.getElementById('profileDisplayName').textContent = fullName || 'Alex Morgan';
-      document.getElementById('profileDisplayUsername').textContent = uName ? `@${uName}` : '@alex_precision';
-      alert('Profile Settings updated successfully!');
+      const settingsData = {
+        Username: document.getElementById('profileUsername').value,
+        FullName: document.getElementById('profileFullName').value,
+        Email: document.getElementById('profileEmail').value,
+        Password: '', 
+        ThemeMode: document.getElementById('themeMode').value,
+        ColorTheme: document.getElementById('colorTheme').value,
+        Units: document.querySelector('input[name="units"]:checked')?.value || 'metric',
+        Avatar: document.getElementById('selectedAvatar').textContent.trim()
+      };
+    
+      google.script.run
+        .withSuccessHandler(() => alert('Settings saved to Google Sheet!'))
+        .saveSettings(settingsData);
     }
 
     // Vehicles Functions
@@ -1458,6 +1467,87 @@
       populateMakes();
       switchView('dashboard');
     });
+
+      document.getElementById('serviceForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const selectedRemarks = Array.from(document.querySelectorAll('.remark-item:checked')).map(cb => cb.value);
+        if (document.getElementById('remarkOtherCheckbox')?.checked) {
+          const customNote = document.getElementById('RemarksOther').value;
+          if (customNote) selectedRemarks.push(customNote);
+        }
+      
+        const serviceData = {
+          ServiceID: document.getElementById('ServiceID').value,
+          VehicleID: document.getElementById('SrvVehicleID').value,
+          ServiceDate: document.getElementById('ServiceDate').value,
+          ServiceType: document.getElementById('ServiceType').value,
+          ServiceTypeOther: document.getElementById('ServiceTypeOther').value || '',
+          OdometerReading: document.getElementById('SrvOdometerReading').value,
+          TotalBill: document.getElementById('TotalBill').value,
+          WorkCarriedOutBy: document.getElementById('WorkCarriedOutBy').value,
+          WorkshopName: document.getElementById('WorkshopName').value,
+          Remarks: selectedRemarks.join(', ')
+        };
+      
+        google.script.run
+          .withSuccessHandler(() => {
+            closeServiceModal();
+            alert('Service log saved!');
+          })
+          .saveService(serviceData);
+      });
+
+
+      document.getElementById('fuelForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+      
+        const fuelData = {
+          FuelID: document.getElementById('FuelID').value,
+          RegistrationNo: document.getElementById('FuelVehicleID').value,
+          PetrolType: document.getElementById('PetrolType').value,
+          FuelCompany: document.getElementById('FuelCompany').value,
+          CompanyOther: document.getElementById('CompanyOther').value || '',
+          FuelDate: document.getElementById('FuelDate').value,
+          FuelTime: document.getElementById('FuelTime').value,
+          OdometerReading: document.getElementById('FuelOdometerReading').value,
+          RatePerLiter: document.getElementById('RatePerLiter').value,
+          FuelLiters: document.getElementById('FuelLiters').value,
+          TotalCost: document.getElementById('TotalCost').value,
+          FuelNotes: document.getElementById('FuelNotes').value
+        };
+      
+        google.script.run
+          .withSuccessHandler(() => {
+            closeFuelModal();
+            alert('Fuel log saved!');
+          })
+          .saveFuelLog(fuelData);
+      });
+
+      document.getElementById('addVehicleForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+      
+        const vehicleData = {
+          VehicleID: document.getElementById('VehicleID').value,
+          VehicleCategory: document.getElementById('VehicleCategory').value,
+          VehicleMake: document.getElementById('VehicleMake').value,
+          VehicleModel: document.getElementById('VehicleModel').value,
+          RegistrationNo: document.getElementById('RegistrationNo').value,
+          Year: document.getElementById('Year').value,
+          StartingOdometer: document.getElementById('StartingOdometer').value,
+          InsuranceExpiry: document.getElementById('InsuranceExpiry').value,
+          PollutionExpiry: document.getElementById('PollutionExpiry').value
+        };
+      
+        google.script.run
+          .withSuccessHandler(() => {
+            closeVehicleModal();
+            alert('Vehicle saved!');
+          })
+          .saveVehicle(vehicleData);
+      });
+
   </script>
 
 </body>
