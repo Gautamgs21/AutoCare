@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" class="light">
 <head>
+  <!-- Basic meta tags for responsive mobile design and character encoding -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>AutoCare - Fleet & Maintenance Suite</title>
 
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Imports the Inter font family for clean typography -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Font Awesome 6 Icons -->
+  <!-- Font Awesome 6 Icons: Imports UI icons for buttons and cards -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-  <!-- Chart.js for Analytics -->
+  <!-- Chart.js for Analytics: Powers visual graphs and charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CSS: Utility-first CSS framework for styling -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
+    /* Tailwind Configuration: Sets up custom color palettes and fonts */
     tailwind.config = {
       darkMode: 'class',
       theme: {
@@ -38,7 +40,7 @@
     }
   </script>
 
-  <!-- CSS Variables for Dynamic Color Themes & Spin Removal -->
+  <!-- CSS Styles: Defines color themes and removes number input spinner arrows -->
   <style>
     :root {
       --color-brand-50: #eff6ff;
@@ -48,7 +50,7 @@
       --color-brand-700: #1d4ed8;
     }
 
-    /* Color Theme Variants */
+    /* Emerald Theme Variant */
     .theme-emerald {
       --color-brand-50: #ecfdf5;
       --color-brand-100: #d1fae5;
@@ -56,6 +58,7 @@
       --color-brand-600: #059669;
       --color-brand-700: #047857;
     }
+    /* Violet Theme Variant */
     .theme-violet {
       --color-brand-50: #f5f3ff;
       --color-brand-100: #ede9fe;
@@ -63,6 +66,7 @@
       --color-brand-600: #7c3aed;
       --color-brand-700: #6d28d9;
     }
+    /* Amber Theme Variant */
     .theme-amber {
       --color-brand-50: #fffbeb;
       --color-brand-100: #fef3c7;
@@ -71,6 +75,7 @@
       --color-brand-700: #b45309;
     }
 
+    /* Removes default increment/decrement arrows on number inputs */
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
       -webkit-appearance: none;
@@ -83,10 +88,10 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col items-center justify-start p-4 sm:p-6 pb-24 transition-colors duration-200">
 
-  <!-- ==================== TOP HEADER ==================== -->
+  <!-- ==================== TOP HEADER SECTION ==================== -->
   <header id="mainHeader" class="w-full max-w-2xl py-2 mb-3 flex items-center justify-between hidden">
     <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold">
+      <div class="w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold shadow-sm">
         <i id="headerIcon" class="fa-solid fa-gauge-high text-base"></i>
       </div>
       <div>
@@ -95,10 +100,10 @@
       </div>
     </div>
 
-    <!-- Header Actions & Profile Avatar Trigger -->
+    <!-- Header Actions & Profile Avatar Trigger Button -->
     <div class="flex items-center gap-2">
       <div id="headerActions"></div>
-      <button type="button" onclick="switchView('profile')" class="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden border border-slate-300 dark:border-slate-600 hover:ring-2 hover:ring-brand-500 transition-all active:scale-95 flex items-center justify-center text-lg">
+      <button type="button" onclick="switchView('profile')" class="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden border border-slate-300 dark:border-slate-600 hover:ring-2 hover:ring-brand-500 transition-all active:scale-95 flex items-center justify-center text-lg shadow-sm">
         <span id="headerAvatarDisplay">🐰</span>
       </button>
     </div>
@@ -107,7 +112,7 @@
   <!-- ==================== MAIN CANVAS CONTAINER ==================== -->
   <main class="w-full max-w-2xl space-y-4">
 
-    <!-- VIEW 0: LOGIN / AUTHENTICATION -->
+    <!-- VIEW 0: LOGIN / AUTHENTICATION SCREEN -->
     <section id="view-login" class="app-view hidden my-auto flex flex-col items-center justify-center pt-8">
       <div class="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 space-y-6">
         <div class="text-center space-y-2">
@@ -118,6 +123,7 @@
           <p id="authSubtitle" class="text-xs text-slate-500 dark:text-slate-400">Sign in to manage your fleet & maintenance</p>
         </div>
 
+        <!-- Authentication Form Wrapper -->
         <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
           <input type="hidden" id="authMode" value="login">
 
@@ -170,8 +176,9 @@
       </div>
     </section>
 
-    <!-- VIEW 1: HOME DASHBOARD -->
+    <!-- VIEW 1: HOME DASHBOARD SCREEN -->
     <section id="view-dashboard" class="app-view hidden space-y-4">
+      <!-- Summary Metric Cards Box -->
       <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm relative overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-500 to-brand-700"></div>
 
@@ -196,6 +203,7 @@
         </div>
       </div>
 
+      <!-- Quick Actions Grid -->
       <div>
         <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">Quick Actions</h2>
         <div class="grid grid-cols-3 gap-3">
@@ -222,6 +230,7 @@
         </div>
       </div>
 
+      <!-- Upcoming Priorities List Container -->
       <div class="space-y-2.5">
         <div class="flex justify-between items-center">
           <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Upcoming Priorities</h2>
@@ -234,14 +243,14 @@
       </div>
     </section>
 
-    <!-- VIEW 2: VEHICLE MANAGEMENT -->
+    <!-- VIEW 2: VEHICLE MANAGEMENT SCREEN -->
     <section id="view-vehicles" class="app-view hidden space-y-4">
       <div id="vehicleList" class="space-y-4">
         <div class="p-6 text-center text-xs text-slate-400">Loading vehicles from Google Sheets...</div>
       </div>
     </section>
 
-    <!-- VIEW 3: SERVICE LOGS -->
+    <!-- VIEW 3: SERVICE LOGS SCREEN -->
     <section id="view-services" class="app-view hidden space-y-4">
       <div id="servicePriorityCard" class="bg-gradient-to-br from-brand-600 to-brand-700 text-white border border-brand-500 rounded-2xl p-5 shadow-sm space-y-3 relative overflow-hidden">
         <div class="flex justify-between items-start">
@@ -258,8 +267,9 @@
       </div>
     </section>
 
-    <!-- VIEW 4: FUEL & MILEAGE LOGS -->
+    <!-- VIEW 4: FUEL & MILEAGE LOGS SCREEN -->
     <section id="view-fuel" class="app-view hidden space-y-4">
+      <!-- Fuel Rates Control Panel -->
       <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 shadow-sm space-y-3">
         <div class="flex items-center gap-2 text-slate-700 dark:text-slate-300">
           <i class="fa-solid fa-indian-rupee-sign text-brand-600 text-sm"></i>
@@ -290,8 +300,9 @@
       </div>
     </section>
 
-    <!-- VIEW 5: FLEET ANALYTICS -->
+    <!-- VIEW 5: FLEET ANALYTICS SCREEN -->
     <section id="view-analytics" class="app-view hidden space-y-4">
+      <!-- Analytics Top Metric Stat Cards -->
       <div class="grid grid-cols-3 gap-3">
         <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3.5 shadow-sm text-center">
           <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Expense</span>
@@ -312,6 +323,7 @@
         </div>
       </div>
 
+      <!-- Efficiency Trends Chart Card Box -->
       <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-3">
         <div class="flex items-center justify-between">
           <div>
@@ -329,7 +341,9 @@
         </div>
       </div>
 
+      <!-- Secondary Analytics Grid Section -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Expense Breakdown Chart Box -->
         <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-3">
           <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-2">
             <h2 class="text-sm font-bold text-slate-900 dark:text-white">Expense Breakdown</h2>
@@ -352,6 +366,7 @@
           </div>
         </div>
 
+        <!-- Vehicle Performance Rankings Box -->
         <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-3">
           <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-2">
             <h2 class="text-sm font-bold text-slate-900 dark:text-white">Vehicle Performance</h2>
@@ -365,7 +380,7 @@
       </div>
     </section>
 
-    <!-- VIEW 6: PROFILE & SETTINGS -->
+    <!-- VIEW 6: PROFILE & SETTINGS SCREEN -->
     <section id="view-profile" class="app-view hidden space-y-4">
       <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm flex flex-col items-center text-center space-y-3">
         <div class="relative">
@@ -383,6 +398,7 @@
       </div>
 
       <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-5">
+        <!-- Cartoon Avatar Selector Picker Dropdown -->
         <div id="avatarPickerContainer" class="hidden bg-slate-50 dark:bg-slate-750 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
           <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Choose Cartoon Avatar</label>
           <div class="grid grid-cols-6 gap-2 text-2xl">
@@ -479,9 +495,9 @@
 
   </main>
 
-  <!-- ==================== GLOBAL MODALS ==================== -->
+  <!-- ==================== GLOBAL POPUP MODALS SECTION ==================== -->
 
-  <!-- MODAL 1: ADD / EDIT VEHICLE -->
+  <!-- MODAL 1: ADD / EDIT VEHICLE FORM POPUP -->
   <div id="vehicleModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
       <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
@@ -564,7 +580,7 @@
     </div>
   </div>
 
-  <!-- MODAL 2: SERVICE LOG RECORD -->
+  <!-- MODAL 2: SERVICE LOG RECORD FORM POPUP -->
   <div id="serviceModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
       <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
@@ -652,7 +668,7 @@
     </div>
   </div>
 
-  <!-- MODAL 3: LOG FUEL FILL-UP -->
+  <!-- MODAL 3: LOG FUEL FILL-UP FORM POPUP -->
   <div id="fuelModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
       <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
@@ -742,7 +758,7 @@
     </div>
   </div>
 
-  <!-- ==================== BOTTOM NAVIGATION BAR ==================== -->
+  <!-- ==================== FIXED BOTTOM NAVIGATION BAR ==================== -->
   <nav id="bottomNav" class="fixed bottom-0 left-0 w-full bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 py-2.5 px-3 flex justify-around items-center z-40 transition-colors duration-200 hidden">
     <button type="button" onclick="switchView('dashboard')" id="nav-dashboard" class="nav-item flex flex-col items-center gap-1 text-brand-600 font-semibold">
       <i class="fa-solid fa-gauge-high text-base"></i>
@@ -766,12 +782,12 @@
     </button>
   </nav>
 
-  <!-- ==================== APPLICATION CORE LOGIC ==================== -->
+  <!-- ==================== APPLICATION CORE JAVASCRIPT ENGINE ==================== -->
   <script>
-    // PASTE YOUR GOOGLE APPS SCRIPT WEB APP DEPLOYMENT URL HERE:
+    /* Google Apps Script Integration Web URL Storage */
     const WEB_APP_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
 
-    // Global Store for Data Fetched from Google Sheets
+    /* Global Store Object holding data fetched from Google Sheets */
     let appData = {
       vehicles: [],
       services: [],
@@ -779,7 +795,7 @@
       settings: []
     };
 
-    // Master List of 100+ Vehicle Services
+    /* Comprehensive Master List of Vehicle Services */
     const masterServices = {
       "Two Wheeler": [
         "Engine Oil Replacement", "Oil Filter Replacement", "Air Filter Cleaning", "Air Filter Replacement",
@@ -820,7 +836,7 @@
     let currentEfficiencyChartType = 'line';
     let currentActiveView = 'login';
 
-    // 1. DATA FETCHING FROM GOOGLE SHEETS
+    /* 1. DATA FETCHING FUNCTION FROM GOOGLE SHEETS */
     async function loadDataFromSheets() {
       if (!WEB_APP_URL || WEB_APP_URL.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")) {
         console.warn("Please replace WEB_APP_URL with your actual deployed Apps Script URL.");
@@ -840,7 +856,7 @@
       }
     }
 
-    // HTTP POST TO GOOGLE SHEETS
+    /* HTTP POST BACKEND SUBMISSION TO GOOGLE SHEETS */
     async function sendToSheet(action, data) {
       if (!WEB_APP_URL || WEB_APP_URL.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")) {
         alert("Please configure your WEB_APP_URL variable in index.html first.");
@@ -862,7 +878,7 @@
       }
     }
 
-    // 2. RENDER ALL DYNAMIC VIEWS FROM SHEET DATA
+    /* 2. RENDER ALL DYNAMIC APPLICATION VIEWS */
     function renderAllViews() {
       populateVehicleDropdowns();
       renderDashboard();
@@ -873,6 +889,7 @@
       applySettingsData();
     }
 
+    /* Helper function to populate vehicle select dropdown boxes */
     function populateVehicleDropdowns() {
       const modalSelects = ['SrvVehicleID', 'FuelVehicleID', 'vehicleFilter'];
       modalSelects.forEach(id => {
@@ -895,7 +912,7 @@
       });
     }
 
-    // DYNAMIC RENDER 1: DASHBOARD
+    /* DYNAMIC RENDER 1: HOME DASHBOARD */
     function renderDashboard() {
       const totalFuel = (appData.fuel || []).reduce((sum, f) => sum + (parseFloat(f.TotalCost) || 0), 0);
       document.getElementById('dashFuelSpend').textContent = `₹ ${totalFuel.toLocaleString('en-IN')}`;
@@ -907,7 +924,6 @@
       });
       document.getElementById('dashDistance').innerHTML = `${maxOdo.toLocaleString('en-IN')} <span class="text-xs font-normal text-slate-500">km</span>`;
 
-      // Priorities List
       const prioritiesContainer = document.getElementById('dashboardPriorities');
       if (!appData.vehicles || !appData.vehicles.length) {
         prioritiesContainer.innerHTML = '<div class="p-4 text-center text-xs text-slate-400">No vehicles registered in Google Sheets.</div>';
@@ -954,7 +970,7 @@
       prioritiesContainer.innerHTML = html || '<div class="p-4 text-center text-xs text-slate-400">All document renewals up to date!</div>';
     }
 
-    // DYNAMIC RENDER 2: VEHICLES
+    /* DYNAMIC RENDER 2: VEHICLE MANAGEMENT */
     function renderVehicles() {
       const container = document.getElementById('vehicleList');
       if (!appData.vehicles || !appData.vehicles.length) {
@@ -1024,7 +1040,7 @@
       }).join('');
     }
 
-    // DYNAMIC RENDER 3: SERVICES
+    /* DYNAMIC RENDER 3: SERVICES */
     function renderServices() {
       const container = document.getElementById('serviceTimeline');
       if (!appData.services || !appData.services.length) {
@@ -1069,7 +1085,7 @@
       `).join('');
     }
 
-    // DYNAMIC RENDER 4: FUEL LOGS
+    /* DYNAMIC RENDER 4: FUEL LOGS */
     function renderFuelLogs() {
       const container = document.getElementById('fuelListContainer');
       if (!appData.vehicles || !appData.vehicles.length) {
@@ -1142,7 +1158,7 @@
       }).join('');
     }
 
-    // DYNAMIC RENDER 5: ANALYTICS
+    /* DYNAMIC RENDER 5: ANALYTICS */
     function renderAnalyticsData() {
       const fuelDebit = (appData.fuel || []).reduce((sum, f) => sum + (parseFloat(f.TotalCost) || 0), 0);
       const serviceDebit = (appData.services || []).reduce((sum, s) => sum + (parseFloat(s.TotalBill) || 0), 0);
@@ -1152,7 +1168,6 @@
       document.getElementById('expenseFuelBreakdown').textContent = `₹ ${fuelDebit.toLocaleString('en-IN')}`;
       document.getElementById('expenseServiceBreakdown').textContent = `₹ ${serviceDebit.toLocaleString('en-IN')}`;
 
-      // Vehicle Performance Ranking
       const rankContainer = document.getElementById('analyticsVehicleRankings');
       if (appData.vehicles && appData.vehicles.length) {
         rankContainer.innerHTML = appData.vehicles.map(v => {
@@ -1175,10 +1190,10 @@
       }
     }
 
-    // DYNAMIC RENDER 6: SETTINGS
+    /* DYNAMIC RENDER 6: SETTINGS */
     function applySettingsData() {
       if (!appData.settings || !appData.settings.length) return;
-      const s = appData.settings[appData.settings.length - 1]; // latest settings row
+      const s = appData.settings[appData.settings.length - 1];
       if (s.Username) {
         document.getElementById('profileUsername').value = s.Username;
         document.getElementById('profileDisplayUsername').textContent = `@${s.Username}`;
@@ -1202,7 +1217,7 @@
       }
     }
 
-    // Auth & Navigation Engine
+    /* Authentication & Screen Routing Logic Engine */
     function toggleAuthMode() {
       const modeInput = document.getElementById('authMode');
       const signUpFields = document.getElementById('signUpFields');
@@ -1341,7 +1356,7 @@
       }
     }
 
-    // Profile & Customizations
+    /* Profile Customization and UI Functions */
     function openAvatarSelector() {
       document.getElementById('avatarPickerContainer').classList.toggle('hidden');
     }
@@ -1379,11 +1394,11 @@
         Units: document.querySelector('input[name="units"]:checked')?.value || 'metric',
         Avatar: document.getElementById('selectedAvatar').textContent.trim()
       };
-    
+     
       sendToSheet('saveSettings', settingsData);
     }
 
-    // Vehicles Functions
+    /* Vehicles Management Functions */
     function toggleMenu(btn) {
       document.querySelectorAll('.menu-dropdown').forEach(m => {
         if (m !== btn.nextElementSibling) m.classList.add('hidden');
@@ -1452,7 +1467,7 @@
 
     document.getElementById('VehicleCategory').addEventListener('change', populateMakes);
 
-    // Services Functions
+    /* Services Logs Management Functions */
     function openServiceModal(vId = '') {
       document.getElementById('serviceModalTitle').textContent = 'Add Service Record';
       document.getElementById('serviceForm').reset();
@@ -1557,7 +1572,7 @@
       document.getElementById('serviceModal').classList.remove('hidden');
     }
 
-    // Fuel Tracker Functions
+    /* Fuel Tracker Calculator Functions */
     function autoSaveRates() {
       localStorage.setItem('autoCare_rateE20', document.getElementById('rateE20').value);
       localStorage.setItem('autoCare_ratePremium', document.getElementById('ratePremium').value);
@@ -1595,6 +1610,7 @@
       document.getElementById('FuelTime').value = new Date().toTimeString().substring(0, 5);
       if (vId) document.getElementById('FuelVehicleID').value = vId;
       applySavedRateToForm();
+      document.getElementById('fuelModal').classList.add('hidden'); // Fixed safe state toggle
       document.getElementById('fuelModal').classList.remove('hidden');
     }
 
@@ -1602,7 +1618,7 @@
       document.getElementById('fuelModal').classList.add('hidden');
     }
 
-    // Analytics Engine
+    /* Analytics Chart Rendering Engine */
     function initCharts() {
       renderEfficiencyChart(currentEfficiencyChartType);
       renderExpenseChart();
@@ -1659,14 +1675,14 @@
       initCharts();
     }
 
-    // Menu Guard
+    /* Global Event Listener to close active popup menus when clicking outside */
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.relative')) {
         document.querySelectorAll('.menu-dropdown').forEach(d => d.classList.add('hidden'));
       }
     });
 
-    // App Boot
+    /* App Initial Boot Sequence */
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('rateE20').value = localStorage.getItem('autoCare_rateE20') || '102.50';
       document.getElementById('ratePremium').value = localStorage.getItem('autoCare_ratePremium') || '108.00';
@@ -1675,7 +1691,7 @@
       loadDataFromSheets();
     });
 
-    // Form Submissions
+    /* Form Submissions Event Listeners */
     document.getElementById('serviceForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       
@@ -1684,7 +1700,7 @@
         const customNote = document.getElementById('RemarksOther').value;
         if (customNote) selectedRemarks.push(customNote);
       }
-    
+     
       const serviceData = {
         ServiceID: document.getElementById('ServiceID').value || 'SRV-' + Date.now(),
         VehicleID: document.getElementById('SrvVehicleID').value,
@@ -1697,14 +1713,14 @@
         WorkshopName: document.getElementById('WorkshopName').value,
         Remarks: selectedRemarks.join(', ')
       };
-    
+     
       await sendToSheet('saveService', serviceData);
       closeServiceModal();
     });
 
     document.getElementById('fuelForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-    
+     
       const fuelData = {
         FuelID: document.getElementById('FuelID').value || 'FUL-' + Date.now(),
         RegistrationNo: document.getElementById('FuelVehicleID').value,
@@ -1719,14 +1735,14 @@
         TotalCost: document.getElementById('TotalCost').value,
         FuelNotes: document.getElementById('FuelNotes').value
       };
-    
+     
       await sendToSheet('saveFuelLog', fuelData);
       closeFuelModal();
     });
 
     document.getElementById('addVehicleForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-    
+     
       const vehicleData = {
         VehicleID: document.getElementById('VehicleID').value || 'VEH-' + Date.now(),
         VehicleCategory: document.getElementById('VehicleCategory').value,
@@ -1738,7 +1754,7 @@
         InsuranceExpiry: document.getElementById('InsuranceExpiry').value,
         PollutionExpiry: document.getElementById('PollutionExpiry').value
       };
-    
+     
       await sendToSheet('saveVehicle', vehicleData);
       closeVehicleModal();
     });
