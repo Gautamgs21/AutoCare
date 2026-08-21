@@ -112,67 +112,50 @@
   <!-- ==================== MAIN CANVAS CONTAINER ==================== -->
   <main class="w-full max-w-2xl space-y-4">
 
-    <!-- VIEW 0: LOGIN / AUTHENTICATION SCREEN -->
-    <section id="view-login" class="app-view hidden my-auto flex flex-col items-center justify-center pt-8">
+    <!-- VIEW 0: SIMPLIFIED LOGIN SCREEN -->
+    <section id="view-login" class="app-view my-auto flex flex-col items-center justify-center pt-8">
       <div class="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 space-y-6">
+        
+        <!-- Circular Profile Picture / Avatar Display -->
         <div class="text-center space-y-2">
-          <div class="w-14 h-14 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto text-2xl font-bold shadow-sm">
-            <i class="fa-solid fa-car-side"></i>
+          <div class="w-20 h-20 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center mx-auto text-3xl font-bold shadow-inner border-2 border-brand-500">
+            <span>🐰</span>
           </div>
-          <h2 id="authTitle" class="text-xl font-extrabold text-slate-900 dark:text-white">Welcome Back</h2>
-          <p id="authSubtitle" class="text-xs text-slate-500 dark:text-slate-400">Sign in to manage your fleet & maintenance</p>
+          <h2 class="text-xl font-extrabold text-slate-900 dark:text-white mt-2">AutoCare Suite</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Please sign in to continue</p>
         </div>
 
-        <!-- Authentication Form Wrapper -->
+        <!-- Login Form Container -->
         <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
-          <input type="hidden" id="authMode" value="login">
-
-          <div id="signUpFields" class="hidden space-y-4">
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Full Name</label>
-              <div class="relative">
-                <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                <input type="text" id="loginFullName" placeholder="e.g. Alex Morgan" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl pl-9 pr-3.5 py-3 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
-              </div>
-            </div>
-          </div>
-
+          
+          <!-- UserID Input Field -->
           <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Email Address</label>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">UserID</label>
             <div class="relative">
-              <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-              <input type="email" id="loginEmail" required value="alex.morgan@example.com" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl pl-9 pr-3.5 py-3 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input type="text" id="loginEmail" required value="alex_precision" placeholder="Enter UserID" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl pl-9 pr-3.5 py-3 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
             </div>
           </div>
 
+          <!-- Password & Forgot Password Link -->
           <div>
             <div class="flex justify-between items-center mb-1">
               <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Password</label>
-              <a href="#" id="forgotPasswordBtn" onclick="alert('Password reset link sent to email.')" class="text-[11px] font-semibold text-brand-600 hover:underline">Forgot?</a>
+              <a href="#" onclick="alert('Password reset link sent to registered contact.')" class="text-[11px] font-semibold text-brand-600 hover:underline">Forgot?</a>
             </div>
             <div class="relative">
               <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-              <input type="password" id="loginPassword" required value="••••••••" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl pl-9 pr-3.5 py-3 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <input type="password" id="loginPassword" required value="••••••••" placeholder="Enter Password" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs rounded-xl pl-9 pr-3.5 py-3 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
             </div>
           </div>
 
-          <div id="rememberMeContainer" class="flex items-center justify-between text-xs">
-            <label class="flex items-center gap-2 cursor-pointer text-slate-600 dark:text-slate-400">
-              <input type="checkbox" checked class="rounded text-brand-600 focus:ring-brand-500">
-              <span>Remember me</span>
-            </label>
-          </div>
-
+          <!-- Sign In Button -->
           <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm py-3 rounded-xl shadow-md transition-all active:scale-[0.99] flex items-center justify-center gap-2">
             <span id="authBtnText">Sign In</span>
             <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
           </button>
         </form>
 
-        <div class="text-center text-xs text-slate-500 pt-2 border-t border-slate-100 dark:border-slate-700">
-          <span id="toggleAuthPrompt">Don't have an account?</span>
-          <button type="button" onclick="toggleAuthMode()" id="toggleAuthBtn" class="font-bold text-brand-600 hover:underline ml-1">Create Account</button>
-        </div>
       </div>
     </section>
 
@@ -1218,61 +1201,8 @@
     }
 
     /* Authentication & Screen Routing Logic Engine */
-    function toggleAuthMode() {
-      const modeInput = document.getElementById('authMode');
-      const signUpFields = document.getElementById('signUpFields');
-      const btnText = document.getElementById('authBtnText');
-      const promptText = document.getElementById('toggleAuthPrompt');
-      const toggleBtn = document.getElementById('toggleAuthBtn');
-      const forgotBtn = document.getElementById('forgotPasswordBtn');
-      const title = document.getElementById('authTitle');
-      const subtitle = document.getElementById('authSubtitle');
-      const rememberMe = document.getElementById('rememberMeContainer');
-
-      if (modeInput.value === 'login') {
-        modeInput.value = 'signup';
-        signUpFields.classList.remove('hidden');
-        btnText.textContent = 'Create Account';
-        promptText.textContent = 'Already have an account?';
-        toggleBtn.textContent = 'Sign In';
-        title.textContent = 'Create Account';
-        subtitle.textContent = 'Sign up to start tracking your fleet';
-        forgotBtn.classList.add('hidden');
-        rememberMe.classList.add('hidden');
-      } else {
-        modeInput.value = 'login';
-        signUpFields.classList.add('hidden');
-        btnText.textContent = 'Sign In';
-        promptText.textContent = "Don't have an account?";
-        toggleBtn.textContent = 'Create Account';
-        title.textContent = 'Welcome Back';
-        subtitle.textContent = 'Sign in to manage your fleet & maintenance';
-        forgotBtn.classList.remove('hidden');
-        rememberMe.classList.remove('hidden');
-      }
-    }
-
     async function handleAuthSubmit(e) {
       e.preventDefault();
-      const mode = document.getElementById('authMode').value;
-      const email = document.getElementById('loginEmail').value;
-
-      if (mode === 'signup') {
-        const fullName = document.getElementById('loginFullName').value;
-        const newSettings = {
-          Username: email.split('@')[0],
-          FullName: fullName || 'New User',
-          Email: email,
-          Password: document.getElementById('loginPassword').value,
-          ThemeMode: 'light',
-          ColorTheme: 'blue',
-          Units: 'metric',
-          Avatar: '🐰'
-        };
-
-        await sendToSheet('saveSettings', newSettings);
-      }
-
       document.getElementById('mainHeader').classList.remove('hidden');
       document.getElementById('bottomNav').classList.remove('hidden');
       switchView('dashboard');
@@ -1610,7 +1540,6 @@
       document.getElementById('FuelTime').value = new Date().toTimeString().substring(0, 5);
       if (vId) document.getElementById('FuelVehicleID').value = vId;
       applySavedRateToForm();
-      document.getElementById('fuelModal').classList.add('hidden'); // Fixed safe state toggle
       document.getElementById('fuelModal').classList.remove('hidden');
     }
 
