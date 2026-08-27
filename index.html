@@ -34,8 +34,13 @@
       </script>
 </head>
 <body class="bg-surface h-full flex items-center justify-center p-4 font-sans text-on-surface">
-<div class="w-full max-w-[400px] bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col gap-6">
+<div class="w-full max-w-[400px] bg-surface-container-lowest rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col gap-6 relative">
   
+  <!-- Toast Notification Container -->
+  <div id="toast" class="hidden absolute -top-14 left-1/2 transform -translate-x-1/2 bg-emerald-600 text-white text-xs font-semibold py-2 px-4 rounded-xl shadow-lg transition-all duration-300">
+    Sign in successful! Redirecting...
+  </div>
+
   <!-- Header -->
   <div class="flex flex-col items-center text-center gap-2">
     <div class="w-16 h-16 bg-primary-container rounded-2xl flex items-center justify-center mb-2 shadow-sm">
@@ -55,7 +60,7 @@
 
     <!-- UserID -->
     <div class="flex flex-col gap-1">
-      <label class="text-xs font-semibold text-on-surface-variant" for="userid">UserID / Email</label>
+      <label class="text-xs font-semibold text-on-surface-variant" for="userid">UserID / Username</label>
       <div class="relative">
         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-outline">
           <span class="material-symbols-outlined text-[20px]">person</span>
@@ -68,14 +73,12 @@
     <div class="flex flex-col gap-1">
       <div class="flex justify-between items-center">
         <label class="text-xs font-semibold text-on-surface-variant" for="password">Password</label>
-        <a class="text-xs font-semibold text-primary hover:underline" href="#" onclick="openForgotPassword(event)">Forgot Password?</a>
       </div>
       <div class="relative">
         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-outline">
           <span class="material-symbols-outlined text-[20px]">lock</span>
         </span>
         <input class="w-full bg-surface-container-lowest border border-slate-300 rounded-xl py-3 pl-10 pr-10 text-sm text-on-surface placeholder:text-outline-variant focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" id="password" placeholder="Enter your password" type="password" required>
-        <!-- Password Visibility Toggle -->
         <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 flex items-center pr-3 text-outline hover:text-on-surface">
           <span id="toggle-icon" class="material-symbols-outlined text-[20px]">visibility_off</span>
         </button>
@@ -92,7 +95,6 @@
 
 <!-- JavaScript Logic -->
 <script>
-  // Toggle Password Visibility
   function togglePasswordVisibility() {
     const passwordInput = document.getElementById('password');
     const toggleIcon = document.getElementById('toggle-icon');
@@ -123,7 +125,7 @@
 
     setLoading(true);
 
-    // Replace with your Google Apps Script Web App URL
+    // REPLACE WITH YOUR ACTUAL APPS SCRIPT WEB APP URL
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwBpW3jUbojaR9-VTJBVDp71_A3LlGhviTRh2WDoFfpJf53HyUTTNdzPeQLX_T-NWz4/exec";
 
     fetch(WEB_APP_URL, {
@@ -141,22 +143,23 @@
     .then(data => {
       setLoading(false);
       if (data && data.status === 'SUCCESS') {
-        window.top.location.href = "https://www.google.com";
+        showToast();
+        setTimeout(() => {
+          window.top.location.href = "https://www.google.co.in";
+        }, 1200); // Wait 1.2 seconds to display the toast message before redirecting
       } else {
-        const status = data ? data.status : 'SERVER_ERROR';
-        if (status === 'ACCOUNT_DISABLED') {
-          showError("Your account has been disabled.");
-        } else if (status === 'ACCOUNT_LOCKED') {
-          showError("Your account is temporarily locked due to multiple failed attempts.");
-        } else {
-          showError("Invalid User ID or Password.");
-        }
+        showError("Invalid User ID or Password.");
       }
     })
     .catch(error => {
       setLoading(false);
       showError("Invalid User ID or Password.");
     });
+  }
+
+  function showToast() {
+    const toast = document.getElementById('toast');
+    toast.classList.remove('hidden');
   }
 
   function setLoading(loading) {
@@ -182,11 +185,6 @@
     const errorDiv = document.getElementById('error-message');
     errorDiv.textContent = message;
     errorDiv.classList.remove('hidden');
-  }
-
-  function openForgotPassword(event) {
-    event.preventDefault();
-    alert("Forgot Password functionality will open here.");
   }
 </script>
 </body>
